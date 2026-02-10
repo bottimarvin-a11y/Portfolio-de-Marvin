@@ -1,0 +1,1056 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Umarex - Galerie 3D Interactive d'Armes</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            color: #2d3748;
+            background: linear-gradient(180deg, #f7fafc 0%, #edf2f7 100%);
+            overflow-x: hidden;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin: 3rem 0 2rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #718096;
+            font-size: 1.1rem;
+        }
+
+        .weapons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .weapon-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .weapon-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .weapon-viewer {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            position: relative;
+            cursor: grab;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .weapon-viewer iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 8px;
+        }
+
+        .weapon-viewer canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .weapon-info {
+            padding: 2rem;
+        }
+
+        .weapon-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 0.75rem;
+        }
+
+        .weapon-type {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .weapon-description {
+            color: #4a5568;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .firing-modes {
+            background: #f7fafc;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .firing-modes h4 {
+            color: #764ba2;
+            font-size: 0.95rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .mode-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .mode-btn {
+            background: white;
+            border: 2px solid #e2e8f0;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: #4a5568;
+        }
+
+        .mode-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .fire-button {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .fire-button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+        }
+
+        .fire-button:active {
+            transform: scale(0.98);
+        }
+
+        .ammo-display {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #667eea;
+        }
+
+        .ammo-label {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .ammo-count {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .controls-info {
+            background: #f7fafc;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+            border-left: 4px solid #667eea;
+        }
+
+        .controls-info h5 {
+            color: #764ba2;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .control-item {
+            font-size: 0.85rem;
+            color: #4a5568;
+            margin: 0.3rem 0;
+        }
+
+        .control-key {
+            background: #e2e8f0;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .recoil-feedback {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .muzzle-flash {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, #ffff00, #ff8800, transparent);
+            border-radius: 50%;
+            animation: muzzleFlash 0.15s ease-out;
+            pointer-events: none;
+        }
+
+        @keyframes muzzleFlash {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(2);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .bullet-trace {
+            position: fixed;
+            width: 2px;
+            height: 100px;
+            background: linear-gradient(to bottom, #ffff00, transparent);
+            pointer-events: none;
+            z-index: 9998;
+            animation: bulletTrace 0.5s ease-out forwards;
+        }
+
+        @keyframes bulletTrace {
+            from {
+                height: 100px;
+                opacity: 1;
+            }
+            to {
+                height: 20px;
+                opacity: 0;
+            }
+        }
+
+        .ammo-impact {
+            position: fixed;
+            width: 30px;
+            height: 30px;
+            border: 2px solid #ff6b6b;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9997;
+            animation: impact 0.8s ease-out forwards;
+        }
+
+        @keyframes impact {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(1.5);
+            }
+        }
+
+        .stats-panel {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            margin: 3rem 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin: 2rem 0;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+        }
+
+        .product-section {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            margin-bottom: 3rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .product-section h2 {
+            color: #667eea;
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .product-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 32px rgba(102, 126, 234, 0.2);
+            border-color: #667eea;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: #667eea;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-body {
+            padding: 1.5rem;
+        }
+
+        .product-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-type {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .product-description {
+            color: #4a5568;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .product-specs {
+            background: #f7fafc;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+        }
+
+        .product-specs p {
+            margin: 0.3rem 0;
+            color: #4a5568;
+        }
+
+        .specs-label {
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .product-price {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn-buy {
+            flex: 1;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-buy:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-view-3d {
+            flex: 1;
+            padding: 0.75rem;
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-view-3d:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .gallery-section {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            margin-bottom: 3rem;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .gallery-section h2 {
+            color: #667eea;
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+        }
+
+        .volume-control {
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .volume-control label {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .volume-control input {
+            flex: 1;
+            max-width: 200px;
+            cursor: pointer;
+        }
+
+        .mute-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .mute-btn:hover {
+            background: #764ba2;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .weapons-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .weapon-viewer {
+                height: 300px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .product-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <a href="index.html" class="back-btn">← Retour au portfolio</a>
+
+        <div class="header">
+            <h1>🔫 Umarex - Boutique d'Armes Professionnelle</h1>
+            <p>Découvrez notre gamme premium d'équipements tactiques et d'armes de haute qualité</p>
+        </div>
+
+        <!-- SECTION PRODUITS DE VENTE -->
+        <div class="product-section">
+            <h2>🛒 Nos Produits Premium</h2>
+            <div class="products-grid" id="productsGrid"></div>
+        </div>
+
+        <!-- SECTION GALERIE 3D INTERACTIVE -->
+        <div class="gallery-section">
+            <h2>🎮 Galerie 3D Interactive - Explorez nos Armes</h2>
+            
+            <div class="volume-control">
+                <label>🔊 Volume des tirs:</label>
+                <input type="range" id="volumeControl" min="0" max="1" step="0.1" value="0.5">
+                <button class="mute-btn" id="muteBtn">🔔 Son ON</button>
+            </div>
+
+            <div class="weapons-grid" id="weaponsGrid"></div>
+        </div>
+
+        <div class="stats-panel">
+            <h2 style="color: #667eea; margin-bottom: 1rem;">📊 Statistiques de Tir</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalShots">0</div>
+                    <div class="stat-label">Coups tirés</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="fireRate">0</div>
+                    <div class="stat-label">Coups/seconde</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="lastMode">-</div>
+                    <div class="stat-label">Dernier mode</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="currentWeapon">-</div>
+                    <div class="stat-label">Arme active</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration des armes avec modèles Sketchfab réalistes
+        const weapons = [
+            {
+                name: 'HK416',
+                type: 'Fusil d\'assaut',
+                price: 2299,
+                description: 'Fusil d\'assaut moderne précis et polyvalent, dérivé de l\'AR-15 mais optimisé pour la fiabilité en conditions difficiles.',
+                longDescription: 'La HK416 est réputée pour sa précision exceptionnelle et sa fiabilité à toute épreuve. Utilisée par les forces spéciales mondiales, elle offre une modulabilité infinie et une ergonomie supérieure.',
+                specs: {
+                    calibre: '.223 Remington',
+                    longueur: '2.5m',
+                    poids: '3.8kg',
+                    cadence: '900 t/min'
+                },
+                emoji: '🎯',
+                sketchfabId: '894edac558894905ba9052b7a4421328', // HK416
+                color: '#444444',
+                dimensions: { length: 2.5, width: 0.15, height: 0.2 },
+                firingModes: [
+                    { name: 'Semi', fireRate: 1, rof: 'Coup par coup' },
+                    { name: 'Auto', fireRate: 10, rof: '900 t/min' },
+                    { name: 'Burst', fireRate: 3, rof: '3 coups' }
+                ]
+            },
+            {
+                name: 'HKMP5',
+                type: 'Pistolet-mitrailleur',
+                price: 1599,
+                description: 'Sous-mitrailleuse compacte fiable et précise, idéale pour les opérations urbaines et les missions spéciales.',
+                longDescription: 'La MP5 est l\'arme de référence pour les opérations spéciales. Extrêmement fiable, silencieuse et précise, elle bénéficie de décennies de perfectionnement.',
+                specs: {
+                    calibre: '9x19 Parabellum',
+                    longueur: '1.8m',
+                    poids: '2.5kg',
+                    cadence: '800 t/min'
+                },
+                emoji: '⚡',
+                sketchfabId: '2b346d6f2df2403ba0e109c2e8e5e999', // MP5 (alternative si indisponible)
+                color: '#555555',
+                dimensions: { length: 1.8, width: 0.12, height: 0.18 },
+                firingModes: [
+                    { name: 'Semi', fireRate: 1, rof: 'Coup par coup' },
+                    { name: 'Auto', fireRate: 15, rof: '800 t/min' }
+                ]
+            },
+            {
+                name: 'Ruger Super Hawk',
+                type: 'Revolver',
+                price: 899,
+                description: 'Revolver robuste et fiable, excellent pour la défense et les applications tactiques avec une grande puissance d\'arrêt.',
+                longDescription: 'Le Ruger Super Hawk est le choix favori des professionnels pour sa robustesse légendaire et sa fiabilité absolue. Conception simple mais efficace.',
+                specs: {
+                    calibre: '.44 Magnum',
+                    longueur: '1.2m',
+                    poids: '1.1kg',
+                    chargeur: '6 coups'
+                },
+                emoji: '💥',
+                sketchfabId: '6d82dfe0b4564a8185e6e9c6e7e8f9a1', // Revolver générique
+                color: '#8b7355',
+                dimensions: { length: 1.2, width: 0.08, height: 0.15 },
+                firingModes: [
+                    { name: 'Semi', fireRate: 1, rof: 'Coup par coup' }
+                ]
+            },
+            {
+                name: 'FAMAS',
+                type: 'Fusil d\'assaut',
+                price: 2199,
+                description: 'Fusil français compact et léger, réputé pour sa fiabilité exceptionnelle et sa polyvalence en combat rapproché.',
+                longDescription: 'Le FAMAS F1 est l\'arme de choix de l\'armée française depuis 40 ans. Compact, léger et fiable, il excelle en milieu urbain et en espaces confinés.',
+                specs: {
+                    calibre: '5.56 OTAN',
+                    longueur: '2.3m',
+                    poids: '3.6kg',
+                    cadence: '1000 t/min'
+                },
+                emoji: '🇫🇷',
+                sketchfabId: '8c93d1e2f3f4a5b6c7d8e9f0a1b2c3d4', // Fusil générique (alternative)
+                color: '#333333',
+                dimensions: { length: 2.3, width: 0.14, height: 0.19 },
+                firingModes: [
+                    { name: 'Semi', fireRate: 1, rof: 'Coup par coup' },
+                    { name: 'Burst', fireRate: 3, rof: '3 coups' },
+                    { name: 'Auto', fireRate: 12, rof: '1000 t/min' }
+                ]
+            }
+        ];
+
+        let audioContext;
+        let masterVolume = 0.5;
+        let soundEnabled = true;
+
+        // Initialiser contexte audio
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        // Générer son de tir réaliste
+        function playFireSound(weaponType) {
+            if (!soundEnabled || !audioContext) return;
+
+            initAudio();
+            const now = audioContext.currentTime;
+
+            // Créer un son de tir avec bruit blanc et modulation
+            const noiseBuffer = audioContext.createBuffer(1, audioContext.sampleRate * 0.3, audioContext.sampleRate);
+            const noiseData = noiseBuffer.getChannelData(0);
+            for (let i = 0; i < noiseBuffer.length; i++) {
+                noiseData[i] = Math.random() * 2 - 1;
+            }
+
+            const noiseSource = audioContext.createBufferSource();
+            noiseSource.buffer = noiseBuffer;
+
+            // Oscillateur pour la fondamentale
+            const osc = audioContext.createOscillator();
+            osc.frequency.setValueAtTime(150, now);
+            osc.frequency.exponentialRampToValueAtTime(50, now + 0.2);
+
+            // Gain pour volume
+            const gainNode = audioContext.createGain();
+            gainNode.gain.setValueAtTime(0.3 * masterVolume, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+
+            // Connecter et jouer
+            osc.connect(gainNode);
+            noiseSource.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            osc.start(now);
+            osc.stop(now + 0.2);
+            noiseSource.start(now);
+            noiseSource.stop(now + 0.3);
+        }
+
+        // Créer la section des produits
+        function initializeProducts() {
+            const container = document.getElementById('productsGrid');
+            
+            weapons.forEach((weapon) => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <div class="product-image">
+                        ${weapon.emoji}
+                    </div>
+                    <div class="product-body">
+                        <div class="product-name">${weapon.name}</div>
+                        <div class="product-type">${weapon.type}</div>
+                        <p class="product-description">${weapon.longDescription}</p>
+                        
+                        <div class="product-specs">
+                            ${Object.entries(weapon.specs).map(([key, value]) => `
+                                <p><span class="specs-label">${key.charAt(0).toUpperCase() + key.slice(1)}:</span> ${value}</p>
+                            `).join('')}
+                        </div>
+
+                        <div class="product-price">${weapon.price.toLocaleString()}€</div>
+                        
+                        <div class="product-actions">
+                            <button class="btn-buy" onclick="alert('Article ajouté au panier: ${weapon.name}')">
+                                🛒 Acheter
+                            </button>
+                            <button class="btn-view-3d" onclick="scrollTo3D('${weapon.name}')">
+                                🎮 Voir en 3D
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function scrollTo3D(weaponName) {
+            const element = document.querySelector(`[data-weapon="${weaponName}"]`);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        // Créer la galerie 3D
+        // Créer le viewer Sketchfab pour chaque arme
+        function createWeaponScene(container, weapon) {
+            // Créer l'iframe Sketchfab
+            const iframe = document.createElement('iframe');
+            const sketchfabUrl = `https://sketchfab.com/models/${weapon.sketchfabId}/embed?autospin=1&autostart=1&preload=1`;
+            
+            iframe.setAttribute('src', sketchfabUrl);
+            iframe.setAttribute('frameborder', '0');
+            iframe.setAttribute('allow', 'autoplay; fullscreen; xr-spatial-tracking');
+            iframe.setAttribute('xr-spatial-tracking', '');
+            iframe.setAttribute('execution-while-out-of-viewport', '');
+            iframe.setAttribute('execution-while-not-rendered', '');
+            iframe.setAttribute('web-share', '');
+            iframe.style.width = '100%';
+            iframe.style.height = '100%';
+            iframe.style.borderRadius = '8px';
+            iframe.style.display = 'block';
+            
+            container.appendChild(iframe);
+            
+            // Retourner un objet compatible avec le système existant
+            return {
+                container: container,
+                iframe: iframe,
+                weapon: weapon,
+                playFireAnimation: () => {
+                    // Animation visuelle au lieu de modifier le modèle
+                    container.style.transform = 'scale(0.99)';
+                    setTimeout(() => {
+                        container.style.transform = 'scale(1)';
+                    }, 100);
+                }
+            };
+        }
+
+        // Initialiser galerie 3D
+        function initializeWeapons() {
+            const container = document.getElementById('weaponsGrid');
+            
+            weapons.forEach((weapon, index) => {
+                const card = document.createElement('div');
+                card.className = 'weapon-card';
+                card.setAttribute('data-weapon', weapon.name);
+                
+                const viewerDiv = document.createElement('div');
+                viewerDiv.className = 'weapon-viewer';
+                
+                const infoDiv = document.createElement('div');
+                infoDiv.className = 'weapon-info';
+                
+                let currentMode = 0;
+                let isAutoFiring = false;
+                const sceneData = createWeaponScene(viewerDiv, weapon);
+
+                infoDiv.innerHTML = `
+                    <div class="weapon-name">${weapon.emoji} ${weapon.name}</div>
+                    <div class="weapon-type">${weapon.type}</div>
+                    <p class="weapon-description">${weapon.description}</p>
+                    
+                    <div class="ammo-display">
+                        <span class="ammo-label">Munitions</span>
+                        <span class="ammo-count" id="ammo-${index}">30/120</span>
+                    </div>
+
+                    <div class="firing-modes">
+                        <h4>⚙️ Modes de Tir</h4>
+                        <div class="mode-buttons" id="modes-${index}">
+                            ${weapon.firingModes.map((mode, modeIndex) => `
+                                <button class="mode-btn ${modeIndex === 0 ? 'active' : ''}" 
+                                        data-mode="${modeIndex}"
+                                        data-rof="${mode.rof}">
+                                    ${mode.name}
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <button class="fire-button" id="fire-${index}">🔫 TIRER</button>
+
+                    <div class="controls-info">
+                        <h5>🎮 Contrôles</h5>
+                        <div class="control-item">
+                            <span class="control-key">Souris</span> - Rotation 3D
+                        </div>
+                        <div class="control-item">
+                            <span class="control-key">Toucher</span> - Mobile
+                        </div>
+                        <div class="control-item">
+                            <strong>ROF:</strong> <span id="rof-${index}">Coup par coup</span>
+                        </div>
+                    </div>
+                `;
+
+                card.appendChild(viewerDiv);
+                card.appendChild(infoDiv);
+                container.appendChild(card);
+
+                // Gestion modes
+                const modeButtons = document.querySelectorAll(`#modes-${index} .mode-btn`);
+                const fireButton = document.getElementById(`fire-${index}`);
+                const rofDisplay = document.getElementById(`rof-${index}`);
+
+                modeButtons.forEach((btn) => {
+                    btn.addEventListener('click', () => {
+                        modeButtons.forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        currentMode = parseInt(btn.dataset.mode);
+                        rofDisplay.textContent = btn.dataset.rof;
+                        document.getElementById('lastMode').textContent = weapon.firingModes[currentMode].name;
+                    });
+                });
+
+                // Gestion tir
+                fireButton.addEventListener('mousedown', () => {
+                    const fireRate = weapon.firingModes[currentMode].fireRate;
+                    
+                    if (fireRate === 1) {
+                        fireShot(weapon.name, index, sceneData, weapon.type);
+                    } else {
+                        isAutoFiring = true;
+                        const interval = setInterval(() => {
+                            if (isAutoFiring) {
+                                fireShot(weapon.name, index, sceneData, weapon.type);
+                            } else {
+                                clearInterval(interval);
+                            }
+                        }, 1000 / fireRate);
+                    }
+                });
+
+                fireButton.addEventListener('mouseup', () => {
+                    isAutoFiring = false;
+                });
+
+                fireButton.addEventListener('mouseleave', () => {
+                    isAutoFiring = false;
+                });
+
+                document.getElementById('currentWeapon').textContent = weapon.name;
+            });
+        }
+
+        let totalShots = 0;
+        let lastShotTime = 0;
+
+        function fireShot(weaponName, weaponIndex, sceneData, weaponType) {
+            totalShots++;
+            const now = Date.now();
+            const timeSinceLast = (now - lastShotTime) / 1000;
+            const fireRate = totalShots / (timeSinceLast || 1);
+
+            document.getElementById('totalShots').textContent = totalShots;
+            document.getElementById('fireRate').textContent = Math.round(fireRate);
+
+            // Animation
+            sceneData.playFireAnimation();
+            
+            // Sons
+            playFireSound(weaponType);
+
+            // Effets visuels
+            createMuzzleFlash();
+            createBulletTrace();
+            createImpactEffect();
+
+            // Vibration
+            if (navigator.vibrate) {
+                navigator.vibrate([10, 5, 10]);
+            }
+
+            lastShotTime = now;
+        }
+
+        function createMuzzleFlash() {
+            const flash = document.createElement('div');
+            flash.className = 'muzzle-flash';
+            flash.style.left = (window.innerWidth / 2 + Math.random() * 100 - 50) + 'px';
+            flash.style.top = (window.innerHeight / 2 - 100) + 'px';
+            document.body.appendChild(flash);
+            
+            setTimeout(() => flash.remove(), 150);
+        }
+
+        function createBulletTrace() {
+            const trace = document.createElement('div');
+            trace.className = 'bullet-trace';
+            trace.style.left = window.innerWidth / 2 + 'px';
+            trace.style.top = window.innerHeight / 2 - 200 + 'px';
+            document.body.appendChild(trace);
+            
+            setTimeout(() => trace.remove(), 500);
+        }
+
+        function createImpactEffect() {
+            const impact = document.createElement('div');
+            impact.className = 'ammo-impact';
+            impact.style.left = (Math.random() * window.innerWidth) + 'px';
+            impact.style.top = (Math.random() * window.innerHeight * 0.6 + 100) + 'px';
+            document.body.appendChild(impact);
+            
+            setTimeout(() => impact.remove(), 800);
+        }
+
+        // Gestion du volume et mute
+        document.addEventListener('DOMContentLoaded', () => {
+            const volumeControl = document.getElementById('volumeControl');
+            const muteBtn = document.getElementById('muteBtn');
+
+            volumeControl.addEventListener('input', (e) => {
+                masterVolume = parseFloat(e.target.value);
+            });
+
+            muteBtn.addEventListener('click', () => {
+                soundEnabled = !soundEnabled;
+                muteBtn.textContent = soundEnabled ? '🔔 Son ON' : '🔇 Son OFF';
+                muteBtn.style.background = soundEnabled ? '#667eea' : '#999999';
+            });
+
+            initializeProducts();
+            initializeWeapons();
+        });
+    </script>
+</body>
+</html>
