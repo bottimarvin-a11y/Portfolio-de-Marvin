@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <link rel="stylesheet" type="text/css" href="enregistrer.css">
+    <meta charset="UTF-8">
+    <title>Projet Scolaire - S'Enregistrer</title>
+</head>
+
+<body>
+    <form action="enregistrer.php" method="post">
+        <center>
+            <h1>S'Enregistrer</h1>
+        </center>
+        <center>
+            <div>
+                Saisir un login :<input type="text" name="login" class="style1"><br>
+                Saisir un mot de passe :<input type="text" name="mdp" class="style1"><br>
+                <label> Fonction </label>
+                <select name="profil">
+                    <option> Responsable </option>
+                    <option>Enseignant </option>
+                </select>
+                <input type="submit" value="S'enregistrer" class="style2"><br>
+                <input type="reset" value="Annuler" class="style2"><br>
+                <a href="index.php">Retour</a>
+            </div>
+        </center>
+    </form>
+</body>
+
+</html>

@@ -1,0 +1,435 @@
+/* ============================================
+   🔐 Projet Scolaire — Page de Connexion
+   Même thème que enregistrer.css
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    --primary: #4f46e5;
+    --primary-light: #818cf8;
+    --primary-dark: #3730a3;
+    --accent: #10b981;
+    --accent-light: #34d399;
+    --bg-start: #0f172a;
+    --bg-end: #1e1b4b;
+    --card-bg: rgba(255, 255, 255, 0.06);
+    --card-border: rgba(255, 255, 255, 0.1);
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 50%, #0c0a2a 100%);
+    overflow: hidden;
+    position: relative;
+}
+
+/* Particules flottantes éducation */
+body::before {
+    content: '🔐 📚 🎓 🏫 ✏️ 📖 💻 🔑 📝 ⭐';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 200%;
+    font-size: 2rem;
+    letter-spacing: 5rem;
+    line-height: 6rem;
+    word-spacing: 8rem;
+    opacity: 0.08;
+    animation: floatEmojis 60s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes floatEmojis {
+    0% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+
+    50% {
+        transform: translate(-10%, -10%) rotate(3deg);
+    }
+
+    100% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+}
+
+/* Orbe lumineuse verte */
+body::after {
+    content: '';
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, transparent 70%);
+    top: -100px;
+    right: -150px;
+    border-radius: 50%;
+    animation: pulseOrb 8s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes pulseOrb {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+
+    50% {
+        transform: scale(1.3);
+        opacity: 0.8;
+    }
+}
+
+/* Titre */
+h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent-light), var(--accent), #059669);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+    animation: titleGlow 3s ease-in-out infinite;
+}
+
+h1::after {
+    content: '🔐';
+    display: inline-block;
+    -webkit-text-fill-color: initial;
+    margin-left: 0.5rem;
+    animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes titleGlow {
+
+    0%,
+    100% {
+        filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.3));
+    }
+
+    50% {
+        filter: drop-shadow(0 0 20px rgba(16, 185, 129, 0.6));
+    }
+}
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+/* Carte formulaire glassmorphism */
+form {
+    position: relative;
+    z-index: 1;
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--card-border);
+    border-radius: 24px;
+    padding: 3rem 2.5rem;
+    width: 90%;
+    max-width: 480px;
+    box-shadow: 0 0 40px rgba(16, 185, 129, 0.2), 0 25px 50px rgba(0, 0, 0, 0.4);
+    animation: cardEntry 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+form:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0 60px rgba(16, 185, 129, 0.3), 0 30px 60px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes cardEntry {
+    0% {
+        opacity: 0;
+        transform: translateY(40px) scale(0.95);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Barre lumineuse verte en haut */
+form::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--accent-light), var(--primary-light), var(--accent-light), transparent);
+    border-radius: 3px;
+    animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+
+    0%,
+    100% {
+        width: 40%;
+        opacity: 0.6;
+    }
+
+    50% {
+        width: 80%;
+        opacity: 1;
+    }
+}
+
+/* Container interne */
+form div {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    align-items: stretch;
+    text-align: left;
+}
+
+center {
+    color: var(--text-primary);
+}
+
+/* Inputs */
+.style1,
+.style2,
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 14px 18px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    color: var(--text-primary);
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    margin-top: 6px;
+}
+
+.style1:focus,
+.style2:focus,
+input[type="text"]:focus,
+input[type="password"]:focus {
+    border-color: var(--accent-light);
+    background: rgba(16, 185, 129, 0.08);
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15), 0 0 20px rgba(16, 185, 129, 0.1);
+    transform: scale(1.02);
+}
+
+.style1::placeholder,
+.style2::placeholder,
+input[type="text"]::placeholder,
+input[type="password"]::placeholder {
+    color: var(--text-secondary);
+}
+
+label,
+form div {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Boutons */
+.style,
+input[type="submit"],
+input[type="reset"] {
+    width: 100%;
+    padding: 14px 24px;
+    border: none;
+    border-radius: 14px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+    margin-top: 0.5rem;
+}
+
+/* Bouton Identifiez-vous — dégradé vert */
+input[type="submit"] {
+    background: linear-gradient(135deg, var(--accent) 0%, #059669 50%, #047857 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+}
+
+input[type="submit"]:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 30px rgba(16, 185, 129, 0.6);
+    background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent) 50%, #059669 100%);
+}
+
+input[type="submit"]:active {
+    transform: translateY(0) scale(0.98);
+}
+
+/* Effet brillance au survol */
+input[type="submit"]::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.15) 50%, transparent 60%);
+    transition: all 0.6s ease;
+    transform: translateX(-100%);
+}
+
+input[type="submit"]:hover::after {
+    transform: translateX(100%);
+}
+
+/* Bouton Annuler */
+input[type="reset"] {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 2px solid rgba(255, 255, 255, 0.12);
+}
+
+input[type="reset"]:hover {
+    border-color: #ef4444;
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.08);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(239, 68, 68, 0.15);
+}
+
+/* Lien S'enregistrer */
+a {
+    display: inline-block;
+    color: var(--primary-light);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 8px 20px;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    margin-top: 0.5rem;
+    position: relative;
+}
+
+a::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: var(--accent-light);
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+    border-radius: 2px;
+}
+
+a:hover {
+    color: var(--accent-light);
+    background: rgba(16, 185, 129, 0.08);
+}
+
+a:hover::after {
+    width: 60%;
+}
+
+/* Responsive */
+@media (max-width: 520px) {
+    form {
+        padding: 2rem 1.5rem;
+        margin: 1rem;
+        border-radius: 18px;
+    }
+
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    .style1,
+    .style2,
+    input[type="text"],
+    input[type="password"] {
+        padding: 12px 14px;
+    }
+}
+
+/* Animations séquentielles */
+form div>* {
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+form div>*:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+form div>*:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+form div>*:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+form div>*:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+form div>*:nth-child(5) {
+    animation-delay: 0.5s;
+}
+
+form div>*:nth-child(6) {
+    animation-delay: 0.6s;
+}
+
+form div>*:nth-child(7) {
+    animation-delay: 0.7s;
+}
+
+form div>*:nth-child(8) {
+    animation-delay: 0.8s;
+}
+
+form div>*:nth-child(9) {
+    animation-delay: 0.9s;
+}
+
+@keyframes slideUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

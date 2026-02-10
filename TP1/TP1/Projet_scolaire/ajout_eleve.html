@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Ajouter un élève</title>
+    <link rel="stylesheet" type="text/css" href="ajout_eleve.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Nouvel Élève</h1>
+        <form action="ajout_eleve.php" method="post">
+
+            <label>Nom de l'élève :</label>
+            <input type="text" name="nom" required>
+
+            <label>Adresse :</label>
+            <input type="text" name="adresse" required>
+
+            <label>Numéro de téléphone :</label>
+            <input type="text" name="tel" required>
+
+            <input type="submit" value="Enregistrer l'élève" class="btn-submit">
+            <input type="reset" value="Effacer" class="btn-reset">
+
+            <br><br>
+            <a href="menu.html" class="link-back">Retour au menu</a>
+        </form>
+    </div>
+</body>
+
+</html>

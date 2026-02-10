@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Tableau de bord</title>
+    <link rel="stylesheet" type="text/css" href="dashboard.css">
+</head>
+
+<body>
+
+    <div class="menu">
+        <button onclick="openTab('eleves')">Gestion des élèves</button>
+        <button onclick="openTab('enseignants')">Gestion des enseignants</button>
+        <button onclick="openTab('statistiques')">Statistiques</button>
+        <a href="logout.php" class="logout-btn">Déconnexion</a>
+    </div>
+
+    <!-- Onglet Gestion des élèves -->
+    <div id="eleves" class="tabcontent">
+        <h2>Gestion des élèves</h2>
+        <button class="action-btn" onclick="window.location.href='ajout_eleve.html'">Ajouter un élève</button>
+        <button class="action-btn" onclick="window.location.href='affichage_eleves.php'">Liste des élèves</button>
+        <button class="action-btn" onclick="window.location.href='affichage_liste.php'">Rechercher un élève</button>
+        <button class="action-btn">Modifier un élève</button>
+        <button class="action-btn">Supprimer un élève</button>
+    </div>
+
+    <!-- Onglet Gestion des enseignants -->
+    <div id="enseignants" class="tabcontent">
+        <h2>Gestion des enseignants</h2>
+        <button class="action-btn">Ajouter un enseignant</button>
+        <button class="action-btn">Rechercher un enseignant</button>
+        <button class="action-btn">Modifier un enseignant</button>
+        <button class="action-btn">Supprimer un enseignant</button>
+    </div>
+
+    <!-- Onglet Statistiques -->
+    <div id="statistiques" class="tabcontent">
+        <h2>Statistiques</h2>
+        <p>Ici vous pourrez afficher des statistiques comme :</p>
+        <ul>
+            <li>Nombre d’élèves inscrits</li>
+            <li>Nombre d’enseignants</li>
+            <li>Répartition des classes</li>
+        </ul>
+    </div>
+
+    <script>
+        function openTab(tabName) {
+            let tabs = document.getElementsByClassName("tabcontent");
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].style.display = "none";
+            }
+            document.getElementById(tabName).style.display = "block";
+        }
+
+        // afficher l’onglet élèves par défaut
+        openTab('eleves');
+    </script>
+</body>
+
+</html>
