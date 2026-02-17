@@ -1,0 +1,3 @@
+Ceci est un fichier de test pour vérifier le déploiement automatique sur GitHub Pages.
+Date: 2026-02-16
+Heure: 22:38
