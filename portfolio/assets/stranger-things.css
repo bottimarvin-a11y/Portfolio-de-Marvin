@@ -1,0 +1,877 @@
+/* ============================================
+   STRANGER THINGS PORTFOLIO — CSS
+   ============================================ */
+
+@import url('https://fonts.cdnfonts.com/css/benguiat');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+    --st-red: #b71c1c;
+    --st-red-bright: #ff1744;
+    --st-red-glow: #ff4444;
+    --st-dark: #0a0a0a;
+    --st-darker: #050505;
+    --st-card: #111118;
+    --st-card-hover: #1a1a28;
+    --st-text: #e8e8e8;
+    --st-text-muted: #777;
+    --st-gold: #d4a017;
+    --st-blue: #1a1a3e;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--st-darker);
+    font-family: 'Inter', sans-serif;
+    color: var(--st-text);
+}
+
+body.menu-active {
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Skip Intro Persistence */
+html.portal-skipped-active #click-screen,
+html.portal-skipped-active #loading-screen,
+html.portal-skipped-active #portal-screen,
+body.portal-skipped #click-screen,
+body.portal-skipped #loading-screen,
+body.portal-skipped #portal-screen {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+html.portal-skipped-active #main-menu,
+body.portal-skipped #main-menu {
+    display: block !important;
+    opacity: 1 !important;
+}
+
+/* ============================================
+   PHASE 0 — CLICK TO START
+   ============================================ */
+
+#click-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: var(--st-darker);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: opacity 0.8s ease;
+}
+
+#click-screen.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.click-text {
+    font-family: 'Benguiat', serif;
+    font-size: clamp(1rem, 3vw, 1.6rem);
+    color: var(--st-red-bright);
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    animation: flicker 3s infinite;
+    text-shadow:
+        0 0 10px rgba(255, 23, 68, 0.6),
+        0 0 30px rgba(255, 23, 68, 0.3),
+        0 0 60px rgba(255, 23, 68, 0.15);
+}
+
+.click-sub {
+    font-size: 0.75rem;
+    color: var(--st-text-muted);
+    margin-top: 20px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes flicker {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    41% {
+        opacity: 1;
+    }
+
+    42% {
+        opacity: 0.3;
+    }
+
+    43% {
+        opacity: 1;
+    }
+
+    44% {
+        opacity: 0.7;
+    }
+
+    45% {
+        opacity: 1;
+    }
+
+    82% {
+        opacity: 1;
+    }
+
+    83% {
+        opacity: 0.2;
+    }
+
+    84% {
+        opacity: 1;
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 0.4;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+/* ============================================
+   PHASE 1 — LOADING SCREEN / TITLE CINEMATIC
+   ============================================ */
+
+#loading-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 900;
+    background: var(--st-darker);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1s ease;
+}
+
+#loading-screen.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#loading-screen.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Stranger Things Title */
+.st-title-container {
+    text-align: center;
+    position: relative;
+}
+
+.st-title-line {
+    font-family: 'Benguiat', serif;
+    text-transform: uppercase;
+    letter-spacing: 0.35em;
+    line-height: 1;
+    color: var(--st-red-bright);
+    position: relative;
+}
+
+.st-title-line.line1 {
+    font-size: clamp(2.5rem, 8vw, 6rem);
+    font-weight: 700;
+}
+
+.st-title-line.line2 {
+    font-size: clamp(1.5rem, 4vw, 3rem);
+    font-weight: 400;
+    margin-top: 10px;
+    letter-spacing: 0.6em;
+}
+
+.st-letter {
+    display: inline-block;
+    opacity: 0;
+    transform: scale(1.8) translateY(-20px);
+    animation: letterAppear 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    text-shadow:
+        0 0 20px rgba(255, 23, 68, 0.8),
+        0 0 40px rgba(255, 23, 68, 0.5),
+        0 0 80px rgba(255, 23, 68, 0.3),
+        0 0 120px rgba(255, 23, 68, 0.15);
+}
+
+@keyframes letterAppear {
+    0% {
+        opacity: 0;
+        transform: scale(2.5) translateY(-30px);
+        filter: blur(8px);
+    }
+
+    50% {
+        opacity: 0.7;
+        filter: blur(2px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        filter: blur(0);
+    }
+}
+
+/* Title glow pulse after letters appear */
+.st-title-container.glow-active .st-letter {
+    animation: glowPulse 3s ease-in-out infinite alternate;
+}
+
+@keyframes glowPulse {
+    0% {
+        text-shadow:
+            0 0 20px rgba(255, 23, 68, 0.8),
+            0 0 40px rgba(255, 23, 68, 0.5),
+            0 0 80px rgba(255, 23, 68, 0.3);
+    }
+
+    100% {
+        text-shadow:
+            0 0 30px rgba(255, 23, 68, 1),
+            0 0 60px rgba(255, 23, 68, 0.7),
+            0 0 100px rgba(255, 23, 68, 0.4),
+            0 0 150px rgba(255, 23, 68, 0.2);
+    }
+}
+
+/* Loading Bar */
+.loading-bar-container {
+    position: absolute;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(80%, 500px);
+    text-align: center;
+}
+
+.loading-bar-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--st-text-muted);
+    margin-bottom: 12px;
+}
+
+.loading-bar-track {
+    width: 100%;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(183, 28, 28, 0.3);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
+}
+
+.loading-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #500, var(--st-red), #ff4444);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+    box-shadow:
+        0 0 15px var(--st-red-bright),
+        0 0 30px var(--st-red-glow);
+    position: relative;
+}
+
+.loading-bar-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: barShine 1.5s infinite;
+}
+
+@keyframes barShine {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.loading-percent {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--st-red-bright);
+    margin-top: 10px;
+    letter-spacing: 2px;
+}
+
+/* Background particles for loading screen */
+#loading-particles {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+}
+
+/* ============================================
+   PHASE 2 — PORTAL TRANSITION
+   ============================================ */
+
+#portal-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 800;
+    background: var(--st-darker);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+}
+
+#portal-screen.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#portal-screen.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.portal-organic-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    perspective: 1000px;
+    overflow: hidden;
+}
+
+.portal-video-asset {
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    filter: brightness(1.0) contrast(1.1);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.no-transition #portal-screen,
+.no-transition #main-menu {
+    transition: none !important;
+}
+
+#portal-screen.active .portal-video-asset {
+    opacity: 1;
+}
+
+.portal-vortex-overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, transparent 20%, rgba(0, 0, 0, 0.8) 80%);
+    pointer-events: none;
+}
+
+.portal-flash {
+    position: fixed;
+    inset: 0;
+    background: white;
+    opacity: 0;
+    z-index: 850;
+    pointer-events: none;
+}
+
+.portal-flash.active {
+    animation: flashBang 0.6s ease-out forwards;
+}
+
+@keyframes flashBang {
+    0% {
+        opacity: 0;
+    }
+
+    15% {
+        opacity: 0.9;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+/* Screen shake */
+.screen-shake {
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translate(0);
+    }
+
+    10% {
+        transform: translate(-8px, 4px);
+    }
+
+    20% {
+        transform: translate(8px, -4px);
+    }
+
+    30% {
+        transform: translate(-6px, -6px);
+    }
+
+    40% {
+        transform: translate(6px, 6px);
+    }
+
+    50% {
+        transform: translate(-4px, 2px);
+    }
+
+    60% {
+        transform: translate(4px, -2px);
+    }
+
+    70% {
+        transform: translate(-2px, 4px);
+    }
+
+    80% {
+        transform: translate(2px, -4px);
+    }
+}
+
+/* Skip Button */
+.skip-portal-btn {
+    position: absolute;
+    bottom: 40px;
+    right: 40px;
+    z-index: 810;
+    background: rgba(183, 28, 28, 0.2);
+    border: 1px solid var(--st-red-bright);
+    color: var(--st-red-bright);
+    padding: 10px 20px;
+    font-family: 'Benguiat', serif;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    backdrop-filter: blur(5px);
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    opacity: 0.6;
+}
+
+.skip-portal-btn:hover {
+    opacity: 1;
+    background: rgba(183, 28, 28, 0.4);
+    box-shadow: 0 0 15px var(--st-red-bright);
+    transform: scale(1.05);
+}
+
+/* ============================================
+   PHASE 3 — MAIN MENU
+   ============================================ */
+
+#main-menu {
+    position: relative;
+    min-height: 100vh;
+    background: #000;
+    opacity: 0;
+    transition: opacity 1.5s ease;
+    z-index: 1;
+}
+
+/* Vecna's Lair Animated Background */
+.vecna-lair-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.lair-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(1.0) contrast(1.1);
+}
+
+/* Particles and fog will be rendered on top via canvas and fog div */
+
+.portal-glow-bg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40%;
+    height: 40%;
+    background: radial-gradient(circle, rgba(255, 68, 68, 0.4) 0%, transparent 70%);
+    animation: portalPulseMenu 4s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+
+@keyframes portalPulseMenu {
+    0% {
+        opacity: 0.3;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+
+    100% {
+        opacity: 0.7;
+        transform: translate(-50%, -50%) scale(1.2);
+    }
+}
+
+#main-menu.active {
+    opacity: 1;
+}
+
+/* Canvas particle background */
+#menu-particles {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* Ambient fog */
+.fog {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse at 20% 80%, rgba(183, 28, 28, 0.06) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(183, 28, 28, 0.04) 0%, transparent 60%),
+        radial-gradient(ellipse at 50% 50%, rgba(10, 10, 30, 0.3) 0%, transparent 80%);
+    animation: fogDrift 20s ease-in-out infinite alternate;
+}
+
+@keyframes fogDrift {
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    100% {
+        transform: translate(30px, -20px) scale(1.05);
+    }
+}
+
+/* Menu Header */
+.menu-header {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 80px 20px 40px;
+}
+
+.menu-title {
+    font-family: 'Benguiat', serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: var(--st-red-bright);
+    text-shadow:
+        0 0 20px rgba(255, 23, 68, 0.7),
+        0 0 40px rgba(255, 23, 68, 0.4),
+        0 0 80px rgba(255, 23, 68, 0.2);
+    animation: menuTitleFloat 6s ease-in-out infinite;
+}
+
+@keyframes menuTitleFloat {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+.menu-subtitle {
+    font-size: 0.85rem;
+    color: var(--st-text-muted);
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    margin-top: 12px;
+}
+
+/* Section Rows (Netflix-style) */
+.menu-content {
+    position: relative;
+    z-index: 10;
+    padding: 20px 40px 80px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.section-row {
+    margin-bottom: 50px;
+}
+
+.section-title {
+    font-family: 'Benguiat', serif;
+    font-size: 1.2rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--st-red-bright);
+    margin-bottom: 18px;
+    padding-left: 5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-shadow: 0 0 15px rgba(255, 23, 68, 0.4);
+}
+
+.section-title::before {
+    content: '';
+    width: 3px;
+    height: 20px;
+    background: var(--st-red-bright);
+    box-shadow: 0 0 8px rgba(255, 23, 68, 0.6);
+}
+
+/* Episode Cards */
+.cards-row {
+    display: flex;
+    gap: 18px;
+    overflow-x: auto;
+    padding-bottom: 15px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+    scrollbar-color: var(--st-red) transparent;
+}
+
+.cards-row::-webkit-scrollbar {
+    height: 4px;
+}
+
+.cards-row::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.cards-row::-webkit-scrollbar-thumb {
+    background: var(--st-red);
+    border-radius: 2px;
+}
+
+.episode-card {
+    min-width: 220px;
+    max-width: 220px;
+    background: var(--st-card);
+    border: 1px solid rgba(255, 23, 68, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    scroll-snap-align: start;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    position: relative;
+}
+
+.episode-card:hover {
+    transform: translateY(-8px) scale(1.03);
+    border-color: rgba(255, 23, 68, 0.5);
+    box-shadow:
+        0 10px 40px rgba(255, 23, 68, 0.2),
+        0 0 20px rgba(255, 23, 68, 0.1);
+    z-index: 20;
+}
+
+.card-thumbnail {
+    width: 100%;
+    height: 130px;
+    background: linear-gradient(135deg, #1a0a0a, #0a0a1a, #1a0a10);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-thumbnail::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(transparent 50%, rgba(0, 0, 0, 0.7) 100%);
+}
+
+.card-episode-number {
+    font-family: 'Benguiat', serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: rgba(255, 23, 68, 0.2);
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 0 30px rgba(255, 23, 68, 0.15);
+}
+
+/* Thumbnail icon based on card type */
+.card-thumbnail .thumb-icon {
+    font-size: 2.5rem;
+    position: relative;
+    z-index: 1;
+    filter: grayscale(0.3);
+}
+
+.card-body {
+    padding: 14px;
+}
+
+.card-tag {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--st-red-bright);
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.card-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--st-text);
+    margin-bottom: 6px;
+    line-height: 1.3;
+}
+
+.card-desc {
+    font-size: 0.72rem;
+    color: var(--st-text-muted);
+    line-height: 1.5;
+}
+
+/* Play icon on hover */
+.episode-card::before {
+    content: '▶';
+    position: absolute;
+    top: 50px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 23, 68, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    color: white;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.3s ease;
+    z-index: 5;
+}
+
+.episode-card:hover::before {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Scanlines overlay */
+.scanlines {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    pointer-events: none;
+    background: repeating-linear-gradient(0deg,
+            transparent 0px,
+            transparent 2px,
+            rgba(0, 0, 0, 0.04) 2px,
+            rgba(0, 0, 0, 0.04) 4px);
+    opacity: 0.5;
+}
+
+/* Vignette */
+.vignette {
+    position: fixed;
+    inset: 0;
+    z-index: 998;
+    pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.6) 100%);
+}
+
+/* Music toggle button */
+.music-toggle {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    z-index: 500;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(183, 28, 28, 0.3);
+    border: 1px solid rgba(255, 23, 68, 0.4);
+    color: var(--st-red-bright);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.music-toggle:hover {
+    background: rgba(183, 28, 28, 0.5);
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(255, 23, 68, 0.4);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .menu-content {
+        padding: 20px 15px 60px;
+    }
+
+    .episode-card {
+        min-width: 170px;
+        max-width: 170px;
+    }
+
+    .card-thumbnail {
+        height: 100px;
+    }
+
+    .menu-header {
+        padding: 50px 15px 30px;
+    }
+}

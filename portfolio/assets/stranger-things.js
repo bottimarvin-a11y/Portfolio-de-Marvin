@@ -1,0 +1,371 @@
+/* ============================================
+   STRANGER THINGS PORTFOLIO — JavaScript
+   ============================================ */
+
+(function () {
+    'use strict';
+
+    // === AUDIO ===
+    const audio = document.getElementById('st-audio');
+    const transitionAudio = document.getElementById('transition-audio');
+    const vortexSfx = document.getElementById('vortex-sfx');
+    const portalAudioContinuation = document.getElementById('portal-audio-continuation');
+    const stTitleSequence = document.getElementById('st-title-sequence-hd');
+    const kateBushFull = document.getElementById('kate-bush-full');
+    const menuBgVideo = document.getElementById('menu-bg-video');
+    const musicBtn = document.getElementById('music-toggle');
+    let musicPlaying = false;
+    let currentPlaylistTrack = null;
+    let playlistIndex = 0;
+
+    // === PERSISTENCE CHECK & BFCACHE HANDLING ===
+    window.addEventListener('pageshow', (event) => {
+        const navEntries = performance.getEntriesByType('navigation');
+        const isReload = navEntries.length > 0 && navEntries[0].type === 'reload';
+
+        if (isReload) {
+            sessionStorage.removeItem('portal_seen');
+            document.documentElement.classList.remove('portal-skipped-active');
+            return;
+        }
+
+        if (sessionStorage.getItem('portal_seen')) {
+            document.body.classList.add('portal-skipped');
+            musicPlaying = true;
+            if (musicBtn) musicBtn.textContent = '🔊';
+
+            // Short delay to ensure browser has re-attached media elements
+            setTimeout(() => {
+                startMenuPhase();
+            }, 150);
+        }
+    });
+
+    function toggleMusic() {
+        if (musicPlaying) {
+            audio.pause();
+            transitionAudio.pause();
+            vortexSfx.pause();
+            if (currentPlaylistTrack) currentPlaylistTrack.pause();
+            musicBtn.textContent = '🔇';
+        } else {
+            // Context dependent play
+            if (document.getElementById('main-menu').classList.contains('active')) {
+                if (currentPlaylistTrack) currentPlaylistTrack.play().catch(() => { });
+                else audio.play().catch(() => { });
+            }
+            musicBtn.textContent = '🔊';
+        }
+        musicPlaying = !musicPlaying;
+    }
+
+    if (musicBtn) musicBtn.addEventListener('click', toggleMusic);
+
+    // === PHASE 0: CLICK TO START ===
+    const clickScreen = document.getElementById('click-screen');
+    const loadingScreen = document.getElementById('loading-screen');
+    const portalScreen = document.getElementById('portal-screen');
+    const mainMenu = document.getElementById('main-menu');
+
+    clickScreen.addEventListener('click', function () {
+        // Start atmospheric hum (low volume)
+        audio.volume = 0.2;
+        audio.play().catch(() => { });
+        musicPlaying = true;
+        if (musicBtn) musicBtn.textContent = '🔊';
+
+        // Transition to loading
+        clickScreen.classList.add('hidden');
+        setTimeout(() => {
+            clickScreen.style.display = 'none';
+            startLoadingPhase();
+        }, 800);
+    });
+
+    // === PHASE 1: LOADING SCREEN ===
+    function startLoadingPhase() {
+        loadingScreen.classList.add('active');
+        initLoadingParticles();
+        animateTitle();
+    }
+
+    function animateTitle() {
+        const letters = document.querySelectorAll('.st-letter');
+        letters.forEach((letter, i) => {
+            letter.style.animationDelay = `${i * 0.12}s`;
+        });
+
+        // After all letters appear, start glow pulse
+        const totalDelay = letters.length * 0.12 + 1.2;
+        setTimeout(() => {
+            const container = document.querySelector('.st-title-container');
+            if (container) container.classList.add('glow-active');
+            startLoadingBar();
+        }, totalDelay * 1000);
+    }
+
+    function startLoadingBar() {
+        const fill = document.querySelector('.loading-bar-fill');
+        const percent = document.querySelector('.loading-percent');
+        let progress = 0;
+
+        const interval = setInterval(() => {
+            const increment = Math.random() * 3 + 0.5;
+            progress = Math.min(progress + increment, 100);
+            fill.style.width = progress + '%';
+            percent.textContent = Math.floor(progress) + '%';
+
+            if (progress >= 100) {
+                clearInterval(interval);
+                percent.textContent = '100%';
+                setTimeout(startPortalPhase, 1000);
+            }
+        }, 100);
+    }
+
+    // Loading screen particles
+    function initLoadingParticles() {
+        const canvas = document.getElementById('loading-particles');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const particles = [];
+        for (let i = 0; i < 200; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                r: Math.random() * 2 + 0.5,
+                vx: (Math.random() - 0.5) * 0.3,
+                vy: -Math.random() * 0.5 - 0.1,
+                alpha: Math.random() * 0.5 + 0.1,
+                pulse: Math.random() * Math.PI * 2
+            });
+        }
+
+        let loadingAnimId;
+        function drawLoadingParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.pulse += 0.02;
+                const alpha = p.alpha * (0.5 + 0.5 * Math.sin(p.pulse));
+
+                if (p.y < -10) { p.y = canvas.height + 10; p.x = Math.random() * canvas.width; }
+                if (p.x < -10) p.x = canvas.width + 10;
+                if (p.x > canvas.width + 10) p.x = -10;
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 68, 68, ${alpha})`;
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r * 3, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 23, 68, ${alpha * 0.15})`;
+                ctx.fill();
+            });
+            loadingAnimId = requestAnimationFrame(drawLoadingParticles);
+        }
+        drawLoadingParticles();
+
+        window._stopLoadingParticles = () => {
+            cancelAnimationFrame(loadingAnimId);
+        };
+    }
+
+    // === PHASE 2: PORTAL TRANSITION ===
+    function startPortalPhase() {
+        loadingScreen.classList.add('hidden');
+        if (window._stopLoadingParticles) window._stopLoadingParticles();
+
+        // Stop the initial hum
+        audio.pause();
+        audio.currentTime = 0;
+
+        setTimeout(() => {
+            loadingScreen.style.display = 'none';
+            portalScreen.classList.add('active');
+
+            const portalVideo = document.getElementById('portal-video');
+            const skipBtn = document.getElementById('skip-portal');
+
+            if (skipBtn) {
+                skipBtn.addEventListener('click', () => {
+                    if (portalVideo) {
+                        portalVideo.pause();
+                        portalVideo.currentTime = 0;
+                    }
+                    document.body.classList.add('no-transition');
+                    portalScreen.classList.add('hidden');
+                    portalScreen.style.display = 'none';
+                    document.body.classList.remove('screen-shake');
+                    startMenuPhase();
+                    setTimeout(() => {
+                        document.body.classList.remove('no-transition');
+                    }, 100);
+                });
+            }
+
+            if (portalVideo) {
+                portalVideo.volume = 1.0; // Video has its own audio for the intro
+                portalVideo.currentTime = 0;
+                portalVideo.play().catch(() => { });
+
+                // TRANSITION INVISIBLE: No flash, direct switch
+                portalVideo.onended = () => {
+                    document.body.classList.add('no-transition');
+                    portalScreen.classList.add('hidden');
+                    portalScreen.style.display = 'none';
+                    document.body.classList.remove('screen-shake');
+
+                    startMenuPhase();
+
+                    // Allow transitions for other elements later
+                    setTimeout(() => {
+                        document.body.classList.remove('no-transition');
+                    }, 100);
+                };
+            } else {
+                // Fallback
+                setTimeout(startMenuPhase, 4000);
+            }
+
+            // Screen shake during intro transition
+            document.body.classList.add('screen-shake');
+        }, 500);
+    }
+
+    // === PHASE 3: MAIN MENU ===
+    function startMenuPhase() {
+        const playlist = [portalAudioContinuation, stTitleSequence, kateBushFull].filter(el => el !== null);
+
+        function playNextTrack() {
+            if (!musicPlaying) return;
+
+            // Stop current if any
+            if (currentPlaylistTrack) {
+                currentPlaylistTrack.pause();
+                currentPlaylistTrack.currentTime = 0;
+            }
+
+            currentPlaylistTrack = playlist[playlistIndex];
+            if (currentPlaylistTrack) {
+                currentPlaylistTrack.volume = 1.0;
+                currentPlaylistTrack.load(); // Reset state
+                currentPlaylistTrack.play().catch(err => {
+                    console.log("Audio play failed:", err);
+                    // If blocked by autoplay, we'll try again on first interaction
+                });
+
+                // Set up next track
+                currentPlaylistTrack.onended = () => {
+                    playlistIndex = (playlistIndex + 1) % playlist.length;
+                    playNextTrack();
+                };
+            }
+        }
+
+        // Start the first track
+        playlistIndex = 0;
+        playNextTrack();
+
+        // Mark as seen for session persistence
+        sessionStorage.setItem('portal_seen', 'true');
+
+        // Setup looping video with lower volume
+        if (menuBgVideo) {
+            menuBgVideo.volume = 0.3; // Lower than audio as requested
+            menuBgVideo.load();
+            menuBgVideo.play().catch(err => {
+                console.log("Video play failed:", err);
+            });
+        }
+
+        document.body.classList.add('menu-active');
+        mainMenu.classList.add('active');
+        initMenuParticles();
+        initParallax();
+        animateCardsIn();
+    }
+
+    // Menu particles (Ash / Dust)
+    function initMenuParticles() {
+        const canvas = document.getElementById('menu-particles');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = Math.max(window.innerHeight, document.body.scrollHeight);
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        const particles = [];
+        const count = 100;
+        for (let i = 0; i < count; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                r: Math.random() * 2 + 0.2,
+                vx: (Math.random() - 0.5) * 0.5,
+                vy: Math.random() * 0.5 + 0.1, // Falling like ash
+                alpha: Math.random() * 0.5 + 0.1,
+                pulse: Math.random() * Math.PI * 2
+            });
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const scrollY = window.scrollY;
+
+            particles.forEach(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.pulse += 0.01;
+                const alpha = p.alpha * (0.6 + 0.4 * Math.sin(p.pulse));
+
+                if (p.y > canvas.height + 20) p.y = -20;
+                if (p.x < -20) p.x = canvas.width + 20;
+                if (p.x > canvas.width + 20) p.x = -20;
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 200, 200, ${alpha})`;
+                ctx.fill();
+            });
+
+            requestAnimationFrame(draw);
+        }
+        draw();
+    }
+
+    function initParallax() {
+        const lair = document.querySelector('.lair-image');
+        const header = document.querySelector('.menu-header');
+        if (!header) return;
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5);
+            const y = (e.clientY / window.innerHeight - 0.5);
+            header.style.transform = `translate(${x * 20}px, ${y * 20}px)`;
+            if (lair) lair.style.transform = `scale(1.1) translate(${x * -15}px, ${y * -15}px)`;
+        });
+    }
+
+    function animateCardsIn() {
+        const cards = document.querySelectorAll('.episode-card');
+        cards.forEach((card, i) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(40px)';
+            card.style.transition = `all 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.5 + i * 0.1}s`;
+            setTimeout(() => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100);
+        });
+    }
+
+})();

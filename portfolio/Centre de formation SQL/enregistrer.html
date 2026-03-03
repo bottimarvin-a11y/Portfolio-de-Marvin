@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🗄️ Centre de Formation — Base de Données</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Floating Orbs -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <div class="container">
+
+        <!-- Back Button -->
+        <a href="../index.html" class="back-btn">← Retour au portfolio</a>
+
+        <!-- Header -->
+        <header class="header">
+            <div class="header-badge">
+                <span class="dot"></span> MySQL 8.0 · phpMyAdmin
+            </div>
+            <h1>Centre de Formation</h1>
+            <p>Base de données relationnelle complète pour la gestion d'un centre de formation : étudiants,
+                formateurs,
+                formations, modules, notes et salles.</p>
+        </header>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat-chip">
+                <span class="icon">👥</span>
+                <div>
+                    <div class="value">8</div>
+                    <div class="label">Étudiants</div>
+                </div>
+            </div>
+            <div class="stat-chip">
+                <span class="icon">🎓</span>
+                <div>
+                    <div class="value">5</div>
+                    <div class="label">Formateurs</div>
+                </div>
+            </div>
+            <div class="stat-chip">
+                <span class="icon">📚</span>
+                <div>
+                    <div class="value">5</div>
+                    <div class="label">Formations</div>
+                </div>
+            </div>
+            <div class="stat-chip">
+                <span class="icon">📦</span>
+                <div>
+                    <div class="value">5</div>
+                    <div class="label">Modules</div>
+                </div>
+            </div>
+            <div class="stat-chip">
+                <span class="icon">📝</span>
+                <div>
+                    <div class="value">7</div>
+                    <div class="label">Notes</div>
+                </div>
+            </div>
+            <div class="stat-chip">
+                <span class="icon">🏫</span>
+                <div>
+                    <div class="value">5</div>
+                    <div class="label">Salles</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showSection('etudiants')">👥 Étudiants</button>
+            <button class="tab-btn" onclick="showSection('formateurs')">🎓 Formateurs</button>
+            <button class="tab-btn" onclick="showSection('formations')">📚 Formations</button>
+            <button class="tab-btn" onclick="showSection('modules')">📦 Modules</button>
+            <button class="tab-btn" onclick="showSection('notes')">📝 Notes</button>
+            <button class="tab-btn" onclick="showSection('salles')">🏫 Salles</button>
+            <button class="tab-btn" onclick="window.location='register.php'">➕ Inscription</button>
+        </div>
+
+        <!-- Action Buttons Bar -->
+        <div class="action-bar">
+            <button class="action-btn action-btn--primary action-btn--shimmer" onclick="openSearch()"
+                data-tooltip="Ctrl+K">
+                <span class="btn-icon">🔍</span> Rechercher
+            </button>
+            <button class="action-btn action-btn--cyan action-btn--shimmer" onclick="window.print()"
+                data-tooltip="Imprimer la page">
+                <span class="btn-icon">🖨️</span> Imprimer
+            </button>
+            <button class="action-btn action-btn--emerald action-btn--shimmer" onclick="exportCSV()"
+                data-tooltip="Exporter en .csv">
+                <span class="btn-icon">📥</span> Export CSV
+            </button>
+            <button class="action-btn action-btn--amber action-btn--shimmer"
+                onclick="showSection('schema'); document.querySelector('[onclick*=schema]').classList.add('active')"
+                data-tooltip="Voir les relations">
+                <span class="btn-icon">🔗</span> Schéma
+            </button>
+            <a href="login.php" class="action-btn action-btn--rose action-btn--shimmer" data-tooltip="Espace membre">
+                <span class="btn-icon">🔐</span> Connexion
+            </a>
+        </div>
+
+        <!-- ========== ÉTUDIANTS ========== -->
+        <div id="etudiants" class="table-section active">
+            <div class="section-header">
+                <div class="section-icon students">👥</div>
+                <div>
+                    <div class="section-title">Étudiants</div>
+                    <div class="section-subtitle">8 enregistrements · 6 colonnes</div>
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom</th>
+                            <th>Prénom</th>
+                            <th>Date de Naissance</th>
+                            <th>Email</th>
+                            <th>Téléphone</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="id-cell">#1</td>
+                            <td class="name-cell">Dupont</td>
+                            <td>Lucas</td>
+                            <td>12/03/2005</td>
+                            <td>lucas.dupont@mail.fr</td>
+                            <td>06 12 34 56 78</td>
+                        </tr>
+                        <tr>
+                            <td class="id-cell">#2</td>
+                            <td class="name-cell">Martin</td>
+                            <td>Emma</td>
+                            <td>22/07/2004</td>
+                            <td>emma.martin@mail.fr</td>
+                            <td>06 23 45 67 89</td>
+                        </tr>
+                        <tr>
+                            <td class="id-cell">#3</td>
+                            <td class="name-cell">Durand</td>
+                            <td>Léo</td>
+                            <td>10/01/2005</td>
+                            <td>leo.durand@mail.fr</td>
+                            <td>06 11 22 33 44</td>
+                        </tr>
+                        <tr>
+                            <td class="id-cell">#4</td>
+                            <td class="name-cell">Petit</td>
+                            <td>Lucas</td>
+                            <td>18/06/2005</td>
+                            <td>lucas.petit@mail.fr</td>
+                            <td>06 12 34 00 00</td>
+                        </tr>
+                        <tr>
+                            <td class="id-cell">#5</td>
+                            <td class="name-cell">Moreau</td>
+                            <td>Clara</td>
+                            <td>02/11/2004</td>
+                            <td>clara.moreau@mail.fr</td>
+                            <td>06 22 00 33 44</td>
+                        </tr>
+                        <tr>
+                            <td class="id-cell">#6</td>
+                            <td class="name-cell">Marc</td>
+                            <td>Sam</td>
+                            <td>12/05/2006</td>
+                            <td>samdupont@gmail.com</td>
+                            <td>06 78 45 12 29</td>
+                        </tr>
+                        <tr>
+                            <td class="id-cell">#8</td>
+                            <td class="name-cell">Mo</td>
+                            <td>Mo</td>
+                            <td>12/05/2006</td>
+                            <td>moad1@gmail.com</td>
+                            <td>03 66 22 11 45</td>
+                        </tr>
+                        <tr>
+                            <td class="id-cell">#9</td>
+                            <td class="name-cell">Aa</td>
+                            <td>Aa</td>
+                            <td>23/08/2006</td>
+                            <td>aa@gmail.com</td>
+                            <td>08 56 58 54 14</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ========== FORMATEURS ========== -->
+        <div id="formateurs" class="table-section">
+            <div class="section-header">
+                <div class="section-icon trainers">🎓</div>
+                <div>
+                    <div class="section-title">Formateurs</div>
+                    <div class="section-subtitle">5 enregistrements · 5 colonnes</div>
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom</th>
+                            <th>Prénom</th>
+                            <th>Spécialité</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="id-cell">#1</td>
+                            <td class="name-cell">Bernard</td>
+                            <td>Sophie</td>
+                            <td><span class="badge badge-indigo">Développement Web</span></td>
+                            <td>sophie.bernard@mail.fr</td>
+                        </tr>
+                        <tr>
+                            <td class="id-cell">#2</td>
+                            <td class="name-cell">Leclerc</td>
+                            <td>Antoine</td>
+                            <td><span class="badge badge-cyan">Réseau</span></td>
+                            <td>antoine.leclerc@mail.fr</td>
+                        </tr>
+                        <tr>
+                            <td class="id-cell">#3</td>
+                            <td class="name-cell">Roux</td>
+                            <td>Marc</td>
+                            <td><span class="badge badge-emerald">Base de données</span></td>
+                            <td>marc.roux@mail.fr</td>
+                        </tr>
+                        <tr>
+                            <td class="id-cell">#4</td>
+                            <td class="name-cell">Lefevre</td>
+                            <td>Julie</td>
+                            <td><span class="badge badge-violet">Algorithmique</span></td>
+                            <td>julie.lefevre@mail.fr</td>
+                        </tr>
+                        <tr>
+                            <td class="id-cell">#5</td>
+                            <td class="name-cell">Garcia</td>
+                            <td>Paul</td>
+                            <td><span class="badge badge-rose">Sécurité</span></td>
+                            <td>paul.garcia@mail.fr</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ========== FORMATIONS ========== -->
+        <div id="formations" class="table-section">
+            <div class="section-header">
+                <div class="section-icon formations">📚</div>
+                <div>
+                    <div class="section-title">Formations</div>
+                    <div class="section-subtitle">5 enregistrements · 5 colonnes</div>
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Intitulé</th>
+                            <th>Durée (h)</th>
+                            <th>Niveau</th>
+                            <th>Formateur</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="id-cell">#1</td>
+                            <td class="name-cell">BTS SIO</td>
+                            <td>1350h</td>
+                            <td><span class="badge badge-indigo">BTS</span></td>
+                            <td>Sophie Bernard</td>
+                        </tr>
+                        <tr>
+                            <td class="id-cell">#2</td>
+                            <td class="name-cell">Développement Web</td>
+                            <td>400h</td>
+                            <td><span class="badge badge-emerald">Débutant</span></td>
+                            <td>Antoine Leclerc</td>
+                        </tr>
+                        <tr>
+                            <td class="id-cell">#3</td>
+                            <td class="name-cell">Réseaux informatiques</td>
+                            <td>600h</td>
+                            <td><span class="badge badge-cyan">BUT</span></td>
+                            <td>Antoine Leclerc</td>
+                        </tr>
+                        <tr>
+                            <td class="id-cell">#4</td>
+                            <td class="name-cell">Bases de données</td>
+                            <td>500h</td>
+                            <td><span class="badge badge-indigo">BTS</span></td>
+                            <td>Marc Roux</td>
+                        </tr>
+                        <tr>
+                            <td class="id-cell">#5</td>
+                            <td class="name-cell">Cybersécurité</td>
+                            <td>450h</td>
+                            <td><span class="badge badge-violet">Licence</span></td>
+                            <td>Paul Garcia</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ========== MODULES ========== -->
+        <div id="modules" class="table-section">
+            <div class="section-header">
+                <div class="section-icon modules">📦</div>
+                <div>
+                    <div class="section-title">Modules</div>
+                    <div class="section-subtitle">5 enregistrements · 4 colonnes</div>
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom du Module</th>
+                            <th>Coefficient</th>
+                            <th>Formation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="id-cell">#1</td>
+                            <td class="name-cell">Programmation PHP</td>
+                            <td><span class="badge badge-amber">Coef. 3</span></td>
+                            <td>Développement Web</td>
+                        </tr>
+                        <tr>
+                            <td class="id-cell">#2</td>
+                            <td class="name-cell">Base de données MySQL</td>
+                            <td><span class="badge badge-amber">Coef. 4</span></td>
+                            <td>Développement Web</td>
+                        </tr>
+                        <tr>
+                            <td class="id-cell">#3</td>
+                            <td class="name-cell">Réseaux TCP/IP</td>
+                            <td><span class="badge badge-amber">Coef. 2</span></td>
+                            <td>Réseaux informatiques</td>
+                        </tr>
+                        <tr>
+                            <td class="id-cell">#4</td>
+                            <td class="name-cell">SQL Avancé</td>
+                            <td><span class="badge badge-amber">Coef. 3</span></td>
+                            <td>Bases de données</td>
+                        </tr>
+                        <tr>
+                            <td class="id-cell">#5</td>
+                            <td class="name-cell">Sécurité des systèmes</td>
+                            <td><span class="badge badge-amber">Coef. 4</span></td>
+                            <td>Cybersécurité</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ========== NOTES ========== -->
+        <div id="notes" class="table-section">
+            <div class="section-header">
+                <div class="section-icon notes">📝</div>
+                <div>
+                    <div class="section-title">Notes</div>
+                    <div class="section-subtitle">7 enregistrements · 4 colonnes</div>
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Étudiant</th>
+                            <th>Module</th>
+                            <th>Note</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="id-cell">#1</td>
+                            <td class="name-cell">Lucas Dupont</td>
+                            <td>Programmation PHP</td>
+                            <td>
+                                <div class="note-bar"><span class="note-value note-mid">14.50</span>
+                                    <div class="bar-track">
+                                        <div class="bar-fill" style="width:72.5%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="id-cell">#2</td>
+                            <td class="name-cell">Emma Martin</td>
+                            <td>Programmation PHP</td>
+                            <td>
+                                <div class="note-bar"><span class="note-value note-high">16.00</span>
+                                    <div class="bar-track">
+                                        <div class="bar-fill" style="width:80%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="id-cell">#3</td>
+                            <td class="name-cell">Léo Durand</td>
+                            <td>Base de données MySQL</td>
+                            <td>
+                                <div class="note-bar"><span class="note-value note-mid">13.00</span>
+                                    <div class="bar-track">
+                                        <div class="bar-fill" style="width:65%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="id-cell">#4</td>
+                            <td class="name-cell">Lucas Petit</td>
+                            <td>Réseaux TCP/IP</td>
+                            <td>
+                                <div class="note-bar"><span class="note-value note-high">15.50</span>
+                                    <div class="bar-track">
+                                        <div class="bar-fill" style="width:77.5%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="id-cell">#5</td>
+                            <td class="name-cell">Clara Moreau</td>
+                            <td>SQL Avancé</td>
+                            <td>
+                                <div class="note-bar"><span class="note-value note-high">17.00</span>
+                                    <div class="bar-track">
+                                        <div class="bar-fill" style="width:85%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="id-cell">#6</td>
+                            <td class="name-cell">Sam Marc</td>
+                            <td>Base de données MySQL</td>
+                            <td>
+                                <div class="note-bar"><span class="note-value note-high">15.00</span>
+                                    <div class="bar-track">
+                                        <div class="bar-fill" style="width:75%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="id-cell">#7</td>
+                            <td class="name-cell">Sam Marc</td>
+                            <td>Programmation PHP</td>
+                            <td>
+                                <div class="note-bar"><span class="note-value note-high">19.00</span>
+                                    <div class="bar-track">
+                                        <div class="bar-fill" style="width:95%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ========== SALLES ========== -->
+        <div id="salles" class="table-section">
+            <div class="section-header">
+                <div class="section-icon salles">🏫</div>
+                <div>
+                    <div class="section-title">Salles</div>
+                    <div class="section-subtitle">5 enregistrements · 4 colonnes</div>
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom</th>
+                            <th>Capacité</th>
+                            <th>Équipement</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="id-cell">#1</td>
+                            <td class="name-cell">Salle A</td>
+                            <td>20 places</td>
+                            <td><span class="badge badge-indigo">Ordinateurs</span> <span
+                                    class="badge badge-cyan">Vidéoprojecteur</span></td>
+                        </tr>
+                        <tr>
+                            <td class="id-cell">#2</td>
+                            <td class="name-cell">Salle B</td>
+                            <td>25 places</td>
+                            <td><span class="badge badge-emerald">Tableaux</span> <span
+                                    class="badge badge-violet">Wi-Fi</span></td>
+                        </tr>
+                        <tr>
+                            <td class="id-cell">#3</td>
+                            <td class="name-cell">Salle C</td>
+                            <td>30 places</td>
+                            <td><span class="badge badge-indigo">Ordinateurs</span> <span
+                                    class="badge badge-violet">Wi-Fi</span></td>
+                        </tr>
+                        <tr>
+                            <td class="id-cell">#4</td>
+                            <td class="name-cell">Salle D</td>
+                            <td>15 places</td>
+                            <td><span class="badge badge-cyan">Vidéoprojecteur</span></td>
+                        </tr>
+                        <tr>
+                            <td class="id-cell">#5</td>
+                            <td class="name-cell">Salle E</td>
+                            <td>40 places</td>
+                            <td><span class="badge badge-indigo">Ordinateurs</span> <span
+                                    class="badge badge-emerald">Tableaux</span> <span
+                                    class="badge badge-violet">Wi-Fi</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ========== SCHEMA ========== -->
+        <div id="schema" class="table-section">
+            <div class="section-header">
+                <div class="section-icon inscrip">🔗</div>
+                <div>
+                    <div class="section-title">Schéma Relationnel</div>
+                    <div class="section-subtitle">7 tables · Clés primaires & étrangères</div>
+                </div>
+            </div>
+            <div class="schema-grid">
+                <!-- Etudiants -->
+                <div class="schema-card">
+                    <h3>👥 etudiants</h3>
+                    <div class="field"><span class="field-icon">🔑</span><span
+                            class="field-name">id_etudiant</span><span class="field-type">INT PK</span></div>
+                    <div class="field"><span class="field-icon">·</span><span class="field-name">nom</span><span
+                            class="field-type">VARCHAR(50)</span></div>
+                    <div class="field"><span class="field-icon">·</span><span class="field-name">prenom</span><span
+                            class="field-type">VARCHAR(50)</span></div>
+                    <div class="field"><span class="field-icon">·</span><span
+                            class="field-name">date_naissance</span><span class="field-type">DATE</span></div>
+                    <div class="field"><span class="field-icon">·</span><span class="field-name">email</span><span
+                            class="field-type">VARCHAR(100)</span></div>
+                    <div class="field"><span class="field-icon">·</span><span class="field-name">telephone</span><span
+                            class="field-type">VARCHAR(20)</span></div>
+                </div>
+                <!-- Formateurs -->
+                <div class="schema-card">
+                    <h3>🎓 formateurs</h3>
+                    <div class="field"><span class="field-icon">🔑</span><span
+                            class="field-name">id_formateur</span><span class="field-type">INT PK</span></div>
+                    <div class="field"><span class="field-icon">·</span><span class="field-name">nom</span><span
+                            class="field-type">VARCHAR(50)</span></div>
+                    <div class="field"><span class="field-icon">·</span><span class="field-name">prenom</span><span
+                            class="field-type">VARCHAR(50)</span></div>
+                    <div class="field"><span class="field-icon">·</span><span class="field-name">specialite</span><span
+                            class="field-type">VARCHAR(100)</span></div>
+                    <div class="field"><span class="field-icon">·</span><span class="field-name">email</span><span
+                            class="field-type">VARCHAR(100)</span></div>
+                </div>
+                <!-- Formations -->
+                <div class="schema-card">
+                    <h3>📚 formations</h3>
+                    <div class="field"><span class="field-icon">🔑</span><span
+                            class="field-name">id_formation</span><span class="field-type">INT PK</span></div>
+                    <div class="field"><span class="field-icon">·</span><span class="field-name">intitule</span><span
+                            class="field-type">VARCHAR(100)</span></div>
+                    <div class="field"><span class="field-icon">·</span><span class="field-name">duree</span><span
+                            class="field-type">INT</span></div>
+                    <div class="field"><span class="field-icon">·</span><span class="field-name">niveau</span><span
+                            class="field-type">VARCHAR(50)</span></div>
+                    <div class="field"><span class="field-icon">🔗</span><span
+                            class="field-name">id_formateur</span><span class="field-type">INT FK</span></div>
+                </div>
+                <!-- Inscriptions -->
+                <div class="schema-card">
+                    <h3>📋 inscriptions</h3>
+                    <div class="field"><span class="field-icon">🔑</span><span
+                            class="field-name">id_inscription</span><span class="field-type">INT PK</span></div>
+                    <div class="field"><span class="field-icon">🔗</span><span
+                            class="field-name">id_etudiant</span><span class="field-type">INT FK</span></div>
+                    <div class="field"><span class="field-icon">🔗</span><span
+                            class="field-name">id_formation</span><span class="field-type">INT FK</span></div>
+                    <div class="field"><span class="field-icon">·</span><span
+                            class="field-name">date_inscription</span><span class="field-type">DATE</span></div>
+                </div>
+                <!-- Modules -->
+                <div class="schema-card">
+                    <h3>📦 modules</h3>
+                    <div class="field"><span class="field-icon">🔑</span><span class="field-name">id_module</span><span
+                            class="field-type">INT PK</span></div>
+                    <div class="field"><span class="field-icon">·</span><span class="field-name">nom_module</span><span
+                            class="field-type">VARCHAR(100)</span></div>
+                    <div class="field"><span class="field-icon">·</span><span class="field-name">coefficient</span><span
+                            class="field-type">INT</span></div>
+                    <div class="field"><span class="field-icon">🔗</span><span
+                            class="field-name">id_formation</span><span class="field-type">INT FK</span></div>
+                </div>
+                <!-- Notes -->
+                <div class="schema-card">
+                    <h3>📝 notes</h3>
+                    <div class="field"><span class="field-icon">🔑</span><span class="field-name">id_note</span><span
+                            class="field-type">INT PK</span></div>
+                    <div class="field"><span class="field-icon">🔗</span><span
+                            class="field-name">id_etudiant</span><span class="field-type">INT FK</span></div>
+                    <div class="field"><span class="field-icon">🔗</span><span class="field-name">id_module</span><span
+                            class="field-type">INT FK</span></div>
+                    <div class="field"><span class="field-icon">·</span><span class="field-name">note</span><span
+                            class="field-type">DECIMAL(4,2)</span></div>
+                </div>
+                <!-- Salles -->
+                <div class="schema-card">
+                    <h3>🏫 salles</h3>
+                    <div class="field"><span class="field-icon">🔑</span><span class="field-name">id_salle</span><span
+                            class="field-type">INT PK</span></div>
+                    <div class="field"><span class="field-icon">·</span><span class="field-name">nom_salle</span><span
+                            class="field-type">VARCHAR(50)</span></div>
+                    <div class="field"><span class="field-icon">·</span><span class="field-name">capacite</span><span
+                            class="field-type">INT</span></div>
+                    <div class="field"><span class="field-icon">·</span><span class="field-name">equipement</span><span
+                            class="field-type">VARCHAR(100)</span></div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /.container -->
+
+    <!-- Search Overlay -->
+    <div class="search-overlay" id="searchOverlay" onclick="if(event.target===this) closeSearch()">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="🔍 Rechercher un étudiant, formateur, formation..."
+                oninput="liveSearch(this.value)">
+            <div class="search-results" id="searchResults"></div>
+        </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <button class="fab" onclick="openSearch()" data-tooltip="Rechercher">🔍</button>
+
+    <!-- Scroll to Top -->
+    <button class="scroll-top" id="scrollTopBtn" onclick="window.scrollTo({top:0, behavior:'smooth'})">↑</button>
+
+    <script>
+        // ---- Tab Navigation ----
+        function showSection(id) {
+            document.querySelectorAll('.table-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            event.currentTarget.classList.add('active');
+
+            // Re-trigger animation
+            const section = document.getElementById(id);
+            section.style.animation = 'none';
+            section.offsetHeight; // reflow
+            section.style.animation = 'fadeInUp 0.5s ease-out';
+        }
+
+        // ---- Animate note bars on view ----
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.querySelectorAll('.bar-fill').forEach(bar => {
+                        const w = bar.style.width;
+                        bar.style.width = '0%';
+                        requestAnimationFrame(() => {
+                            requestAnimationFrame(() => {
+                                bar.style.width = w;
+                            });
+                        });
+                    });
+                }
+            });
+        }, { threshold: 0.3 });
+
+        document.querySelectorAll('.table-section').forEach(s => observer.observe(s));
+
+        // ---- Row hover glow effect ----
+        document.querySelectorAll('tbody tr').forEach(row => {
+            row.addEventListener('mouseenter', () => {
+                row.style.boxShadow = 'inset 3px 0 0 var(--accent-indigo)';
+            });
+            row.addEventListener('mouseleave', () => {
+                row.style.boxShadow = 'none';
+            });
+        });
+
+        // ---- Search Functionality ----
+        const searchData = [
+            { table: 'Étudiants', name: 'Dupont Lucas', id: 'etudiants' },
+            { table: 'Étudiants', name: 'Martin Emma', id: 'etudiants' },
+            { table: 'Étudiants', name: 'Durand Leo', id: 'etudiants' },
+            { table: 'Étudiants', name: 'Petit Lucas', id: 'etudiants' },
+            { table: 'Étudiants', name: 'Moreau Clara', id: 'etudiants' },
+            { table: 'Étudiants', name: 'Marc Sam', id: 'etudiants' },
+            { table: 'Formateurs', name: 'Bernard Sophie — Développement Web', id: 'formateurs' },
+            { table: 'Formateurs', name: 'Leclerc Antoine — Réseau', id: 'formateurs' },
+            { table: 'Formateurs', name: 'Roux Marc — Base de données', id: 'formateurs' },
+            { table: 'Formateurs', name: 'Lefevre Julie — Algorithmique', id: 'formateurs' },
+            { table: 'Formateurs', name: 'Garcia Paul — Sécurité', id: 'formateurs' },
+            { table: 'Formations', name: 'BTS SIO — 1350h', id: 'formations' },
+            { table: 'Formations', name: 'Développement Web — 400h', id: 'formations' },
+            { table: 'Formations', name: 'Réseaux informatiques — 600h', id: 'formations' },
+            { table: 'Formations', name: 'Bases de données — 500h', id: 'formations' },
+            { table: 'Formations', name: 'Cybersécurité — 450h', id: 'formations' },
+            { table: 'Modules', name: 'Programmation PHP', id: 'modules' },
+            { table: 'Modules', name: 'Base de données MySQL', id: 'modules' },
+            { table: 'Modules', name: 'Réseaux TCP/IP', id: 'modules' },
+            { table: 'Modules', name: 'SQL Avancé', id: 'modules' },
+            { table: 'Modules', name: 'Sécurité des systèmes', id: 'modules' },
+            { table: 'Salles', name: 'Salle A — 20 places', id: 'salles' },
+            { table: 'Salles', name: 'Salle B — 25 places', id: 'salles' },
+            { table: 'Salles', name: 'Salle C — 30 places', id: 'salles' },
+            { table: 'Salles', name: 'Salle D — 15 places', id: 'salles' },
+            { table: 'Salles', name: 'Salle E — 40 places', id: 'salles' },
+        ];
+
+        function openSearch() {
+            document.getElementById('searchOverlay').classList.add('active');
+            setTimeout(() => document.getElementById('searchInput').focus(), 100);
+        }
+
+        function closeSearch() {
+            document.getElementById('searchOverlay').classList.remove('active');
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchResults').innerHTML = '';
+        }
+
+        function liveSearch(query) {
+            const results = document.getElementById('searchResults');
+            if (query.length < 2) { results.innerHTML = ''; return; }
+            const filtered = searchData.filter(d => d.name.toLowerCase().includes(query.toLowerCase()));
+            results.innerHTML = filtered.length === 0
+                ? '<div class="search-result-item" style="color:var(--text-muted)">Aucun résultat</div>'
+                : filtered.map(d => `
+                    <div class="search-result-item" onclick="goToResult('${d.id}')">
+                        <span class="result-table">${d.table}</span> ${d.name}
+                    </div>
+                `).join('');
+        }
+
+        function goToResult(sectionId) {
+            closeSearch();
+            document.querySelectorAll('.table-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            const matchBtn = document.querySelector(`[onclick*="'${sectionId}'"]`);
+            if (matchBtn) matchBtn.classList.add('active');
+        }
+
+        // ---- Export CSV ----
+        function exportCSV() {
+            const activeSection = document.querySelector('.table-section.active');
+            const table = activeSection?.querySelector('table');
+            if (!table) { alert('Aucune table visible à exporter.'); return; }
+            let csv = '';
+            table.querySelectorAll('tr').forEach(row => {
+                const cells = [...row.querySelectorAll('th, td')].map(c => '"' + c.textContent.trim().replace(/"/g, '""') + '"');
+                csv += cells.join(',') + '\n';
+            });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = activeSection.id + '_export.csv';
+            link.click();
+        }
+
+        // ---- Scroll to top visibility ----
+        window.addEventListener('scroll', () => {
+            document.getElementById('scrollTopBtn').classList.toggle('visible', window.scrollY > 300);
+        });
+
+        // ---- Keyboard shortcut: Ctrl+K for search ----
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                openSearch();
+            }
+            if (e.key === 'Escape') closeSearch();
+        });
+    </script>
+
+</body>
+
+</html>

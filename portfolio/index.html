@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio de Marvin — The Upside Down</title>
+  <meta name="description" content="Portfolio numérique de Marvin — Inspiré par Stranger Things">
+  <link rel="stylesheet" href="assets/stranger-things.css">
+  <script>
+    // Immediate persistence check to hide intro screens before they render
+    if (sessionStorage.getItem('portal_seen') && performance.getEntriesByType('navigation')[0]?.type !== 'reload') {
+      document.documentElement.classList.add('portal-skipped-active');
+    }
+  </script>
+</head>
+
+<body>
+
+  <!-- AUDIO: Soundscapes -->
+  <audio id="st-audio" loop preload="auto">
+    <source src="https://archive.org/download/tvtunes_32890/Stranger%20Things.mp3" type="audio/mpeg">
+    <source src="assets/stranger-things-theme.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- Transition Audio: Running Up That Hill (Kate Bush) -->
+  <audio id="transition-audio" preload="auto">
+    <source src="https://archive.org/download/KateBushrunningupthathill/Kate_Bush__Running_Up_That_Hill__12___.mp3"
+      type="audio/mpeg">
+    <source src="assets/running-up-that-hill.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- Vortex SFX -->
+  <audio id="vortex-sfx" preload="auto">
+    <source src="https://mixkit.co/static/media/whoosh-movement-soft-2720.5f5b4f8d.mp3" type="audio/mpeg">
+    <source src="assets/vortex.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- Portal Continuation Audio -->
+  <audio id="portal-audio-continuation" preload="auto">
+    <source src="assets/portal-audio-continuation.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- Playlist: Track 2 -->
+  <audio id="st-title-sequence-hd" preload="auto">
+    <source src="assets/st-title-sequence-hd.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- Playlist: Track 3 -->
+  <audio id="kate-bush-full" preload="auto">
+    <source src="assets/kate-bush-full.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- Scanlines + Vignette overlays -->
+  <div class="scanlines"></div>
+  <div class="vignette"></div>
+  <div class="portal-flash"></div>
+
+  <!-- ==================================
+         PHASE 0 — CLICK TO START
+         ================================== -->
+  <div id="click-screen">
+    <div class="click-text">Entrer dans l'Upside Down</div>
+    <div class="click-sub">▸ Cliquer pour commencer ▸</div>
+  </div>
+
+  <!-- ==================================
+         PHASE 1 — LOADING SCREEN
+         ================================== -->
+  <div id="loading-screen">
+    <canvas id="loading-particles"></canvas>
+
+    <div class="st-title-container">
+      <div class="st-title-line line1">
+        <span class="st-letter">P</span><span class="st-letter">O</span><span class="st-letter">R</span><span
+          class="st-letter">T</span><span class="st-letter">F</span><span class="st-letter">O</span><span
+          class="st-letter">L</span><span class="st-letter">I</span><span class="st-letter">O</span>
+      </div>
+      <div class="st-title-line line2">
+        <span class="st-letter">D</span><span class="st-letter">E</span><span class="st-letter">&nbsp;</span><span
+          class="st-letter">M</span><span class="st-letter">A</span><span class="st-letter">R</span><span
+          class="st-letter">V</span><span class="st-letter">I</span><span class="st-letter">N</span>
+      </div>
+    </div>
+
+    <div class="loading-bar-container">
+      <div class="loading-bar-label">Ouverture du portail...</div>
+      <div class="loading-bar-track">
+        <div class="loading-bar-fill"></div>
+      </div>
+      <div class="loading-percent">0%</div>
+    </div>
+  </div>
+
+  <!-- ==================================
+         PHASE 2 — PORTAL TRANSITION
+         ================================== -->
+  <div id="portal-screen">
+    <div class="portal-organic-container">
+      <video id="portal-video" class="portal-video-asset" playsinline preload="auto">
+        <source src="assets/portal-intro.mp4" type="video/mp4">
+      </video>
+      <div class="portal-vortex-overlay"></div>
+      <button id="skip-portal" class="skip-portal-btn">Passer la cinématique ▸</button>
+    </div>
+  </div>
+
+  <!-- ==================================
+         PHASE 3 — MAIN MENU
+         ================================== -->
+  <div id="main-menu">
+    <!-- Vecna's Lair AI Video Background -->
+    <div class="vecna-lair-bg">
+      <video id="menu-bg-video" loop autoplay playsinline class="lair-video">
+        <source src="assets/portal-loop.mp4" type="video/mp4">
+      </video>
+      <div class="portal-glow-bg"></div>
+    </div>
+
+    <canvas id="menu-particles"></canvas>
+    <div class="fog"></div>
+
+    <header class="menu-header">
+      <h1 class="menu-title">Portfolio de Marvin</h1>
+      <p class="menu-subtitle">BTS SIO — Bienvenue dans l'Upside Down</p>
+    </header>
+
+    <main class="menu-content">
+
+      <!-- TP Row -->
+      <section class="section-row">
+        <h2 class="section-title">📺 Les Travaux Pratiques</h2>
+        <div class="cards-row">
+
+          <a href="tps/TP1.html" class="episode-card">
+            <div class="card-thumbnail">
+              <span class="card-episode-number">01</span>
+            </div>
+            <div class="card-body">
+              <div class="card-tag">Chapitre 1</div>
+              <div class="card-name">TP n°1 — Les Fondations</div>
+              <div class="card-desc">Premiers pas en HTML et mise en page web</div>
+            </div>
+          </a>
+
+          <a href="tps/TP2.html" class="episode-card">
+            <div class="card-thumbnail">
+              <span class="card-episode-number">02</span>
+            </div>
+            <div class="card-body">
+              <div class="card-tag">Chapitre 2</div>
+              <div class="card-name">TP n°2 — Le Portail</div>
+              <div class="card-desc">Structuration avancée et contenu</div>
+            </div>
+          </a>
+
+          <a href="tps/TP3_index.html" class="episode-card">
+            <div class="card-thumbnail">
+              <span class="card-episode-number">03</span>
+            </div>
+            <div class="card-body">
+              <div class="card-tag">Chapitre 3</div>
+              <div class="card-name">TP n°3 — L'Autre Dimension</div>
+              <div class="card-desc">Navigation multi-pages et index</div>
+            </div>
+          </a>
+
+          <a href="tps/TP4_index.html" class="episode-card">
+            <div class="card-thumbnail">
+              <span class="card-episode-number">04</span>
+            </div>
+            <div class="card-body">
+              <div class="card-tag">Chapitre 4</div>
+              <div class="card-name">TP n°4 — Le Labyrinthe</div>
+              <div class="card-desc">Sommaire, contenu et navigation complexe</div>
+            </div>
+          </a>
+
+          <a href="tps/TP5.html" class="episode-card">
+            <div class="card-thumbnail">
+              <span class="card-episode-number">05</span>
+            </div>
+            <div class="card-body">
+              <div class="card-tag">Chapitre 5</div>
+              <div class="card-name">TP n°5 — Les Esprits</div>
+              <div class="card-desc">Introduction au style CSS</div>
+            </div>
+          </a>
+
+          <a href="tps/TP6.html" class="episode-card">
+            <div class="card-thumbnail">
+              <span class="card-episode-number">06</span>
+            </div>
+            <div class="card-body">
+              <div class="card-tag">Chapitre 6</div>
+              <div class="card-name">TP n°6 — La Source</div>
+              <div class="card-desc">Approfondissement du CSS</div>
+            </div>
+          </a>
+
+          <a href="tps/TP7.html" class="episode-card">
+            <div class="card-thumbnail">
+              <span class="card-episode-number">07</span>
+            </div>
+            <div class="card-body">
+              <div class="card-tag">Chapitre 7</div>
+              <div class="card-name">TP n°7 — Le Signal</div>
+              <div class="card-desc">Premiers scripts JavaScript</div>
+            </div>
+          </a>
+
+          <a href="tps/TP8.html" class="episode-card">
+            <div class="card-thumbnail">
+              <span class="card-episode-number">08</span>
+            </div>
+            <div class="card-body">
+              <div class="card-tag">Chapitre 8</div>
+              <div class="card-name">TP n°8 — L'Écho</div>
+              <div class="card-desc">Mise en page avancée et style</div>
+            </div>
+          </a>
+
+          <a href="tps/TP9.html" class="episode-card">
+            <div class="card-thumbnail">
+              <span class="card-episode-number">09</span>
+            </div>
+            <div class="card-body">
+              <div class="card-tag">Chapitre 9</div>
+              <div class="card-name">TP n°9 — La Fracture</div>
+              <div class="card-desc">Fonctions et logique JS</div>
+            </div>
+          </a>
+
+          <a href="tps/TP10.html" class="episode-card">
+            <div class="card-thumbnail">
+              <span class="card-episode-number">10</span>
+            </div>
+            <div class="card-body">
+              <div class="card-tag">Chapitre 10</div>
+              <div class="card-name">TP n°10 — Le Dénouement</div>
+              <div class="card-desc">JavaScript avancé et fonctions</div>
+            </div>
+          </a>
+
+        </div>
+      </section>
+
+      <!-- Projets Row -->
+      <section class="section-row">
+        <h2 class="section-title">🏫 Les Projets</h2>
+        <div class="cards-row">
+
+          <a href="projets/TP1/TP1/Projet_scolaire/index.php" class="episode-card">
+            <div class="card-thumbnail">
+              <span class="thumb-icon">🖥️</span>
+            </div>
+            <div class="card-body">
+              <div class="card-tag">Projet PHP</div>
+              <div class="card-name">Système de Gestion Scolaire</div>
+              <div class="card-desc">Application complète de gestion d'école avec PHP et MySQL</div>
+            </div>
+          </a>
+
+          <a href="Centre de formation SQL/login.php" class="episode-card">
+            <div class="card-thumbnail">
+              <span class="thumb-icon">🗄️</span>
+            </div>
+            <div class="card-body">
+              <div class="card-tag">Projet SQL</div>
+              <div class="card-name">Centre de Formation</div>
+              <div class="card-desc">Dashboards admin, enseignant et étudiant avec rôles et permissions</div>
+            </div>
+          </a>
+
+          <a href="Centre de formation SQL/enregistrer.html" class="episode-card">
+            <div class="card-thumbnail">
+              <span class="thumb-icon">📊</span>
+            </div>
+            <div class="card-body">
+              <div class="card-tag">Vitrine SQL</div>
+              <div class="card-name">Présentation Base de Données</div>
+              <div class="card-desc">Visualisation interactive des tables et schémas SQL</div>
+            </div>
+          </a>
+
+        </div>
+      </section>
+
+      <!-- Base de Données Row -->
+      <section class="section-row">
+        <h2 class="section-title">📊 Base de Données</h2>
+        <div class="cards-row">
+
+          <a href="tps/jmerise_Exo1.html" class="episode-card">
+            <div class="card-thumbnail">
+              <span class="thumb-icon">📋</span>
+            </div>
+            <div class="card-body">
+              <div class="card-tag">MCD / MLD</div>
+              <div class="card-name">Système Militaire — JMerise</div>
+              <div class="card-desc">Modèle conceptuel et logique de données</div>
+            </div>
+          </a>
+
+          <a href="tps/sql_jmerise.html" class="episode-card">
+            <div class="card-thumbnail">
+              <span class="thumb-icon">💾</span>
+            </div>
+            <div class="card-body">
+              <div class="card-tag">SQL</div>
+              <div class="card-name">Script SQL Complet</div>
+              <div class="card-desc">Création de tables, insertions et requêtes</div>
+            </div>
+          </a>
+
+        </div>
+      </section>
+
+      <!-- Options BTS Row -->
+      <section class="section-row">
+        <h2 class="section-title">🎓 Options BTS SIO</h2>
+        <div class="cards-row">
+
+          <a href="options/Option_SLAM.html" class="episode-card">
+            <div class="card-thumbnail">
+              <span class="thumb-icon">💻</span>
+            </div>
+            <div class="card-body">
+              <div class="card-tag">Option</div>
+              <div class="card-name">SLAM — Développement</div>
+              <div class="card-desc">Solutions Logicielles et Applications Métiers</div>
+            </div>
+          </a>
+
+          <a href="options/Option_SISR.html" class="episode-card">
+            <div class="card-thumbnail">
+              <span class="thumb-icon">🌐</span>
+            </div>
+            <div class="card-body">
+              <div class="card-tag">Option</div>
+              <div class="card-name">SISR — Réseau</div>
+              <div class="card-desc">Solutions d'Infrastructure, Systèmes et Réseaux</div>
+            </div>
+          </a>
+
+        </div>
+      </section>
+
+      <!-- Modules Row -->
+      <section class="section-row">
+        <h2 class="section-title">📚 Modules de Formation</h2>
+        <div class="cards-row">
+
+          <a href="modules/Module1.html" class="episode-card">
+            <div class="card-thumbnail">
+              <span class="card-episode-number">M1</span>
+            </div>
+            <div class="card-body">
+              <div class="card-tag">Module</div>
+              <div class="card-name">Module 1</div>
+              <div class="card-desc">Premier module de formation</div>
+            </div>
+          </a>
+
+          <a href="modules/Module2.html" class="episode-card">
+            <div class="card-thumbnail">
+              <span class="card-episode-number">M2</span>
+            </div>
+            <div class="card-body">
+              <div class="card-tag">Module</div>
+              <div class="card-name">Module 2</div>
+              <div class="card-desc">Deuxième module de formation</div>
+            </div>
+          </a>
+
+          <a href="modules/Module3.html" class="episode-card">
+            <div class="card-thumbnail">
+              <span class="card-episode-number">M3</span>
+            </div>
+            <div class="card-body">
+              <div class="card-tag">Module</div>
+              <div class="card-name">Module 3</div>
+              <div class="card-desc">Troisième module de formation</div>
+            </div>
+          </a>
+
+        </div>
+      </section>
+
+      <!-- Certifications Row -->
+      <section class="section-row">
+        <h2 class="section-title">🏆 Certifications</h2>
+        <div class="cards-row">
+
+          <a href="certificats/Mes_Certif.html" class="episode-card">
+            <div class="card-thumbnail">
+              <span class="thumb-icon">🏅</span>
+            </div>
+            <div class="card-body">
+              <div class="card-tag">Certif</div>
+              <div class="card-name">Mes Certifications</div>
+              <div class="card-desc">Diplômes et certifications professionnelles obtenues</div>
+            </div>
+          </a>
+
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Music toggle button -->
+  <button id="music-toggle" class="music-toggle" title="Musique ON/OFF">🔊</button>
+
+  <script src="assets/stranger-things.js"></script>
+</body>
+
+</html>
