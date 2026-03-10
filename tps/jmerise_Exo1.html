@@ -5,8 +5,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MCD - Système de Gestion de Grades et Militaires</title>
-    <link rel="stylesheet" href="../assets/style.css">
+    <link rel="stylesheet" href="../assets/internal-style.css">
     <style>
+        /* Stranger Things theme variable overrides */
+        :root {
+            --primary: #b71c1c;
+            --primary-light: #ff1744;
+            --primary-dark: #ff6b6b;
+            --bg-white: rgba(255, 255, 255, 0.04);
+            --border-radius: 12px;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+            --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.5);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
+            --text-dark: var(--st-text);
+            --text-light: var(--st-text-muted);
+            --transition: all 0.3s ease;
+        }
+
         .mcd-container {
             max-width: 1200px;
             margin: 3rem auto;
@@ -301,8 +316,8 @@
 </head>
 
 <body>
-    <div class="mcd-container">
-        <a href="../index.html" class="back-btn">← Retour au portfolio</a>
+    <div class="mcd-container" style="max-width:1200px; margin:0 auto; padding:40px 30px;">
+        <a href="../index.html" class="back-btn">⇠ Retour au Portail</a>
 
         <div class="intro-section">
             <h1>📊 Système de Gestion Militaire</h1>

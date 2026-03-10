@@ -1,36 +1,85 @@
-<html lang="en"><head>
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="../assets/style.css">
-    <link rel="stylesheet" href="TP5.css">
+    <title>TP5 — Formulaire de Contact</title>
+    <link rel="stylesheet" href="../assets/internal-style.css">
 </head>
+
 <body>
-    
-    <h1><center>Formulaire</center></h1>
-    <form>
-<center>
-        <table width="20%" border="0"> 
-            <tbody><tr><td bgcolor=""><label for="l1">Nom</label></td> <td><input type="text" name="t1" size="30"></td></tr>
-            <tr><td><label for="l2">Prénom</label></td> <td><input type="text" name="t2" size="30"></td></tr> 
-            <tr><td><label for="l3">Mot de passe</label></td> <td><input type="password" name="t3" size="30"></td></tr>
-            <tr><td><label name="l4">Adresse : </label></td> <td><textarea cols="30" rows="5"></textarea></td></tr>
-            <tr><td><label name="l5"> Ville: </label></td> <td><select><option>Paris</option><option>Créteil</option><option>Nice</option></select></td></tr> 
-            <tr><td><label name="l6">Situation: </label></td> <td>Boursier <input type="radio" name="r1">Alternance <input type="radio" name="r1">Aucun <input type="radio" name="r1"></td></tr>
-            <tr><td><label name="l7">Hobbies :</label></td> <td>Lecture <input type="checkbox" name="c1">Sport  <input type="checkbox" name="c2">Jeux Vidéos <input type="checkbox" name="c3"></td></tr>
-            
 
-        </tbody></table>
+    <div class="st-container">
+        <a href="../index.html" class="back-btn">⇠ Retour au Portail</a>
 
-    <button>Enregistrer</button>
-    <br>
-    <input type="submit" name="b1">
-    <input type="reset" name="b2">
-</center>
-</form>
+        <h1>Formulaire d'Inscription</h1>
 
-    
+        <form>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                    <label for="nom">Nom</label>
+                    <input type="text" id="nom" name="t1" placeholder="Exploration Team">
+                </div>
+                <div>
+                    <label for="prenom">Prénom</label>
+                    <input type="text" id="prenom" name="t2" placeholder="Dustin">
+                </div>
+            </div>
 
+            <label for="pass">Mot de passe</label>
+            <input type="password" id="pass" name="t3" placeholder="••••••••">
 
+            <label for="adr">Adresse</label>
+            <textarea id="adr" name="t4" rows="4" placeholder="Hawkins, Indiana"></textarea>
 
-</body></html>
+            <label for="ville">Ville</label>
+            <select id="ville">
+                <option>Hawkins</option>
+                <option>Paris</option>
+                <option>Créteil</option>
+                <option>Nice</option>
+            </select>
+
+            <label>Situation</label>
+            <div style="margin-bottom: 20px; display: flex; gap: 20px;">
+                <label
+                    style="font-family: inherit; color: inherit; font-size: inherit; display: inline-flex; align-items: center; gap: 5px;">
+                    <input type="radio" name="r1"> Boursier
+                </label>
+                <label
+                    style="font-family: inherit; color: inherit; font-size: inherit; display: inline-flex; align-items: center; gap: 5px;">
+                    <input type="radio" name="r1"> Alternance
+                </label>
+                <label
+                    style="font-family: inherit; color: inherit; font-size: inherit; display: inline-flex; align-items: center; gap: 5px;">
+                    <input type="radio" name="r1"> Aucun
+                </label>
+            </div>
+
+            <label>Hobbies</label>
+            <div style="margin-bottom: 30px; display: flex; gap: 20px; flex-wrap: wrap;">
+                <label
+                    style="font-family: inherit; color: inherit; font-size: inherit; display: inline-flex; align-items: center; gap: 5px;">
+                    <input type="checkbox" name="c1"> Lecture
+                </label>
+                <label
+                    style="font-family: inherit; color: inherit; font-size: inherit; display: inline-flex; align-items: center; gap: 5px;">
+                    <input type="checkbox" name="c2"> Sport
+                </label>
+                <label
+                    style="font-family: inherit; color: inherit; font-size: inherit; display: inline-flex; align-items: center; gap: 5px;">
+                    <input type="checkbox" name="c3"> Jeux Vidéos
+                </label>
+            </div>
+
+            <div style="text-align: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+                <input type="submit" value="Enregistrer">
+                <input type="reset" value="Réinitialiser">
+            </div>
+        </form>
+    </div>
+
+</body>
+
+</html>

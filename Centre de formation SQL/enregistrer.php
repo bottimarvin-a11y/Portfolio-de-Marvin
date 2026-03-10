@@ -1,25 +1,38 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 session_start();
 include("Connexion.php");
 
 $message = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $login = mysqli_real_escape_string($conn, $_POST["login"]);
-    $mdp = mysqli_real_escape_string($conn, $_POST["mdp"]);
-    $role = mysqli_real_escape_string($conn, $_POST["role"]);
+    $login = mysqli_real_escape_string($conn, $_POST["login"] ?? '');
+    $mdp = mysqli_real_escape_string($conn, $_POST["mdp"] ?? '');
+    $role = mysqli_real_escape_string($conn, $_POST["role"] ?? '');
+    $nom = mysqli_real_escape_string($conn, $_POST["nom"] ?? '');
+    $prenom = mysqli_real_escape_string($conn, $_POST["prenom"] ?? '');
 
-    // Vérifier si le login existe déjà
-    $check = mysqli_query($conn, "SELECT id FROM users WHERE login='$login'");
-    if (mysqli_num_rows($check) > 0) {
-        $message = "Cet identifiant est déjà utilisé.";
+    if (empty($login) || empty($mdp) || empty($role)) {
+        $message = "Veuillez remplir tous les champs obligatoires.";
     } else {
-        $sql = "INSERT INTO users (login, mdp, role) VALUES ('$login', '$mdp', '$role')";
-        if (mysqli_query($conn, $sql)) {
-            echo "<script>alert('Compte créé avec succès !'); window.location='login.php';</script>";
-            exit();
+        // Vérifier si le login existe déjà
+        $check = mysqli_query($conn, "SELECT id FROM users WHERE login='$login'");
+        if (mysqli_num_rows($check) > 0) {
+            $message = "Cet identifiant est déjà utilisé.";
         } else {
-            $message = "Erreur : " . mysqli_error($conn);
+            $sql = "INSERT INTO users (login, mdp, role, nom, prenom) VALUES ('$login', '$mdp', '$role', '$nom', '$prenom')";
+            if (mysqli_query($conn, $sql)) {
+                // Optionnel : Connecter l'utilisateur automatiquement après inscription
+                $_SESSION['user'] = $login;
+                $_SESSION['role'] = $role;
+                $_SESSION['user_id'] = mysqli_insert_id($conn);
+
+                echo "<script>alert('Compte créé avec succès ! Bienvenue.'); window.location='login.php';</script>";
+                exit();
+            } else {
+                $message = "Erreur lors de la création du compte : " . mysqli_error($conn) . " [SQL: $sql]";
+            }
         }
     }
 }
@@ -85,6 +98,8 @@ mysqli_close($conn);
         <?php if ($message)
             echo "<p class='error'>$message</p>"; ?>
         <form method="POST">
+            <input type="text" name="prenom" placeholder="Prénom" required>
+            <input type="text" name="nom" placeholder="Nom" required>
             <input type="text" name="login" placeholder="Identifiant" required>
             <input type="password" name="mdp" placeholder="Mot de passe" required>
             <select name="role" required>

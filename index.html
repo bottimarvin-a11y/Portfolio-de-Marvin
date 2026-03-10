@@ -7,6 +7,7 @@
   <title>Portfolio de Marvin — The Upside Down</title>
   <meta name="description" content="Portfolio numérique de Marvin — Inspiré par Stranger Things">
   <link rel="stylesheet" href="assets/stranger-things.css">
+  <link rel="stylesheet" href="assets/vecna-ai.css">
   <script>
     // Immediate persistence check to hide intro screens before they render
     if (sessionStorage.getItem('portal_seen') && performance.getEntriesByType('navigation')[0]?.type !== 'reload') {
@@ -37,17 +38,16 @@
   </audio>
 
   <!-- Portal Continuation Audio -->
-  <audio id="portal-audio-continuation" preload="auto">
+  <audio id="portal-audio-continuation" preload="none">
     <source src="assets/portal-audio-continuation.mp3" type="audio/mpeg">
   </audio>
 
-  <!-- Playlist: Track 2 -->
-  <audio id="st-title-sequence-hd" preload="auto">
+  <!-- Playlist Tracks (Preload Metadata Only) -->
+  <audio id="st-title-sequence-hd" preload="none">
     <source src="assets/st-title-sequence-hd.mp3" type="audio/mpeg">
   </audio>
 
-  <!-- Playlist: Track 3 -->
-  <audio id="kate-bush-full" preload="auto">
+  <audio id="kate-bush-full" preload="none">
     <source src="assets/kate-bush-full.mp3" type="audio/mpeg">
   </audio>
 
@@ -97,11 +97,13 @@
          ================================== -->
   <div id="portal-screen">
     <div class="portal-organic-container">
-      <video id="portal-video" class="portal-video-asset" playsinline preload="auto">
+      <video id="portal-video" class="portal-video-asset" playsinline preload="metadata"
+        poster="assets/portal-gate.png">
         <source src="assets/portal-intro.mp4" type="video/mp4">
       </video>
       <div class="portal-vortex-overlay"></div>
-      <button id="skip-portal" class="skip-portal-btn">Passer la cinématique ▸</button>
+      <button id="skip-portal" class="skip-portal-btn" aria-label="Passer la cinématique d'introduction">Passer la
+        cinématique ▸</button>
     </div>
   </div>
 
@@ -111,7 +113,7 @@
   <div id="main-menu">
     <!-- Vecna's Lair AI Video Background -->
     <div class="vecna-lair-bg">
-      <video id="menu-bg-video" loop autoplay playsinline class="lair-video">
+      <video id="menu-bg-video" loop autoplay playsinline muted class="lair-video" poster="assets/vecna-lair.png">
         <source src="assets/portal-loop.mp4" type="video/mp4">
       </video>
       <div class="portal-glow-bg"></div>
@@ -154,7 +156,7 @@
             </div>
           </a>
 
-          <a href="tps/TP3_index.html" class="episode-card">
+          <a href="tps/TP3.html" class="episode-card">
             <div class="card-thumbnail">
               <span class="card-episode-number">03</span>
             </div>
@@ -165,7 +167,7 @@
             </div>
           </a>
 
-          <a href="tps/TP4_index.html" class="episode-card">
+          <a href="tps/TP4.html" class="episode-card">
             <div class="card-thumbnail">
               <span class="card-episode-number">04</span>
             </div>
@@ -272,7 +274,7 @@
             </div>
           </a>
 
-          <a href="Centre de formation SQL/enregistrer.html" class="episode-card">
+          <a href="Centre de formation SQL/bdd.php" class="episode-card">
             <div class="card-thumbnail">
               <span class="thumb-icon">📊</span>
             </div>
@@ -410,9 +412,12 @@
   </div>
 
   <!-- Music toggle button -->
-  <button id="music-toggle" class="music-toggle" title="Musique ON/OFF">🔊</button>
+  <button id="music-toggle" class="music-toggle" title="Musique ON/OFF"
+    aria-label="Activer ou désactiver la musique">🔊</button>
 
   <script src="assets/stranger-things.js"></script>
+  <!-- VECNA AI ASSISTANT -->
+  <script src="assets/vecna-ai.js"></script>
 </body>
 
 </html>

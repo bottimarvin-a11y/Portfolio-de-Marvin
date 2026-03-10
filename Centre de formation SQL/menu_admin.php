@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 session_start();
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header("Location: login.php");
@@ -6,9 +8,72 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 }
 include("Connexion.php");
 
+// Récupérer les infos du profil de l'admin connecté
+$admin_id = $_SESSION['user_id'];
+$rAdmin = mysqli_query($conn, "SELECT * FROM users WHERE id=$admin_id");
+$adminData = mysqli_fetch_assoc($rAdmin);
+$adminPhoto = $adminData['photo'] ?? '';
+$adminFullName = trim(($adminData['prenom'] ?? '') . ' ' . ($adminData['nom'] ?? ''));
+if ($adminFullName == '')
+    $adminFullName = $_SESSION['user'];
+
 // ---- Traitement des actions ----
 $message = '';
 $msgType = '';
+
+// Modifier un utilisateur
+if (isset($_POST['edit_user_profile'])) {
+    $id = intval($_POST['user_id']);
+    $nom = mysqli_real_escape_string($conn, $_POST['nom']);
+    $prenom = mysqli_real_escape_string($conn, $_POST['prenom']);
+
+    // Gestion de la photo
+    $photo_sql = "";
+    if (isset($_FILES['photo']) && $_FILES['photo']['name'] != '') {
+        if ($_FILES['photo']['error'] == 0) {
+            $upload_dir = 'uploads/profiles/';
+            if (!is_dir($upload_dir))
+                mkdir($upload_dir, 0777, true);
+
+            $file_ext = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
+            $allowed_ext = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+
+            if (in_array($file_ext, $allowed_ext)) {
+                $file_name = "profile_" . $id . "_" . time() . "." . $file_ext;
+                $target_file = $upload_dir . $file_name;
+
+                if (move_uploaded_file($_FILES['photo']['tmp_name'], $target_file)) {
+                    $photo_sql = ", photo='$target_file'";
+                } else {
+                    $message = "Erreur : Impossible de déplacer l'image vers le dossier 'uploads/profiles/'. Vérifiez les permissions du dossier.";
+                    $msgType = "error";
+                }
+            } else {
+                $message = "Erreur : Extension de fichier non autorisée. Utilisez JPG, PNG ou WEBP.";
+                $msgType = "error";
+            }
+        } else {
+            $message = "Erreur de téléchargement : Code " . $_FILES['photo']['error'];
+            $msgType = "error";
+        }
+    }
+
+    if ($msgType != 'error') {
+        $sql = "UPDATE users SET nom='$nom', prenom='$prenom' $photo_sql WHERE id=$id";
+        if (mysqli_query($conn, $sql)) {
+            $message = "Profil utilisateur mis à jour !";
+            $msgType = "success";
+        } else {
+            $db_error = mysqli_error($conn);
+            if (strpos($db_error, "Unknown column 'photo'") !== false) {
+                $message = "Erreur : La base de données n'est pas à jour. Veuillez <a href='migrate_db.php' style='color:inherit; font-weight:bold; text-decoration:underline;'>exécuter le script de migration ici</a>.";
+            } else {
+                $message = "Erreur SQL : " . $db_error;
+            }
+            $msgType = "error";
+        }
+    }
+}
 
 // Supprimer un utilisateur
 if (isset($_GET['delete_user'])) {
@@ -51,14 +116,16 @@ if (isset($_GET['delete_formation'])) {
 if (isset($_POST['add_etudiant'])) {
     $nom = mysqli_real_escape_string($conn, $_POST['nom']);
     $prenom = mysqli_real_escape_string($conn, $_POST['prenom']);
-    $date = mysqli_real_escape_string($conn, $_POST['date_naissance']);
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
-    $tel = mysqli_real_escape_string($conn, $_POST['telephone']);
-    if (mysqli_query($conn, "INSERT INTO etudiants (nom, prenom, date_naissance, email, telephone) VALUES ('$nom','$prenom','$date','$email','$tel')")) {
+    $date = !empty($_POST['date_naissance']) ? "'" . mysqli_real_escape_string($conn, $_POST['date_naissance']) . "'" : "NULL";
+    $email = !empty($_POST['email']) ? "'" . mysqli_real_escape_string($conn, $_POST['email']) . "'" : "NULL";
+    $tel = !empty($_POST['telephone']) ? "'" . mysqli_real_escape_string($conn, $_POST['telephone']) . "'" : "NULL";
+
+    $sql = "INSERT INTO etudiants (nom, prenom, date_naissance, email, telephone) VALUES ('$nom','$prenom',$date,$email,$tel)";
+    if (mysqli_query($conn, $sql)) {
         $message = "Étudiant ajouté avec succès !";
         $msgType = "success";
     } else {
-        $message = "Erreur : " . mysqli_error($conn);
+        $message = "Erreur : " . mysqli_error($conn) . " [SQL: $sql]";
         $msgType = "error";
     }
 }
@@ -67,13 +134,15 @@ if (isset($_POST['add_etudiant'])) {
 if (isset($_POST['add_formateur'])) {
     $nom = mysqli_real_escape_string($conn, $_POST['nom']);
     $prenom = mysqli_real_escape_string($conn, $_POST['prenom']);
-    $specialite = mysqli_real_escape_string($conn, $_POST['specialite']);
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
-    if (mysqli_query($conn, "INSERT INTO formateurs (nom, prenom, specialite, email) VALUES ('$nom','$prenom','$specialite','$email')")) {
+    $specialite = !empty($_POST['specialite']) ? "'" . mysqli_real_escape_string($conn, $_POST['specialite']) . "'" : "NULL";
+    $email = !empty($_POST['email']) ? "'" . mysqli_real_escape_string($conn, $_POST['email']) . "'" : "NULL";
+
+    $sql = "INSERT INTO formateurs (nom, prenom, specialite, email) VALUES ('$nom','$prenom',$specialite,$email)";
+    if (mysqli_query($conn, $sql)) {
         $message = "Formateur ajouté avec succès !";
         $msgType = "success";
     } else {
-        $message = "Erreur : " . mysqli_error($conn);
+        $message = "Erreur : " . mysqli_error($conn) . " [SQL: $sql]";
         $msgType = "error";
     }
 }
@@ -83,12 +152,12 @@ if (isset($_POST['add_formation'])) {
     $intitule = mysqli_real_escape_string($conn, $_POST['intitule']);
     $duree = intval($_POST['duree']);
     $niveau = mysqli_real_escape_string($conn, $_POST['niveau']);
-    $id_formateur = intval($_POST['id_formateur']);
-    if (mysqli_query($conn, "INSERT INTO formations (intitule, duree, niveau, id_formateur) VALUES ('$intitule',$duree,'$niveau',$id_formateur)")) {
+    $sql = "INSERT INTO formations (intitule, duree, niveau, id_formateur) VALUES ('$intitule',$duree,'$niveau',$id_formateur)";
+    if (mysqli_query($conn, $sql)) {
         $message = "Formation ajoutée avec succès !";
         $msgType = "success";
     } else {
-        $message = "Erreur : " . mysqli_error($conn);
+        $message = "Erreur : " . mysqli_error($conn) . " [SQL: $sql]";
         $msgType = "error";
     }
 }
@@ -97,12 +166,12 @@ if (isset($_POST['add_formation'])) {
 if (isset($_POST['add_note'])) {
     $id_etudiant = intval($_POST['id_etudiant']);
     $id_module = intval($_POST['id_module']);
-    $note = floatval($_POST['note']);
-    if (mysqli_query($conn, "INSERT INTO notes (id_etudiant, id_module, note) VALUES ($id_etudiant, $id_module, $note)")) {
+    $sql = "INSERT INTO notes (id_etudiant, id_module, note) VALUES ($id_etudiant, $id_module, $note)";
+    if (mysqli_query($conn, $sql)) {
         $message = "Note ajoutée avec succès !";
         $msgType = "success";
     } else {
-        $message = "Erreur : " . mysqli_error($conn);
+        $message = "Erreur : " . mysqli_error($conn) . " [SQL: $sql]";
         $msgType = "error";
     }
 }
@@ -459,6 +528,24 @@ $section = $_GET['section'] ?? 'dashboard';
             transform: translateY(-1px);
         }
 
+        /* Search Input */
+        .search-input {
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-glass);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            outline: none;
+            width: 250px;
+            transition: var(--transition);
+        }
+
+        .search-input:focus {
+            border-color: var(--accent-indigo);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
         @media (max-width: 768px) {
             .sidebar {
                 display: none;
@@ -490,6 +577,19 @@ $section = $_GET['section'] ?? 'dashboard';
             <div class="sidebar-brand">
                 <h2>🛡️ Centre Formation</h2>
                 <small>Panneau d'administration</small>
+            </div>
+
+            <!-- Profile Section -->
+            <div class="sidebar-profile">
+                <?php if ($adminPhoto): ?>
+                    <img src="<?= $adminPhoto ?>" class="profile-photo" alt="Profile">
+                <?php else: ?>
+                    <div class="profile-photo"
+                        style="display:flex; align-items:center; justify-content:center; background:var(--bg-glass); font-size:1.5rem;">
+                        👤</div>
+                <?php endif; ?>
+                <div class="user-name"><?= htmlspecialchars($adminFullName ?? '') ?></div>
+                <div class="user-role">Administrateur</div>
             </div>
 
             <div class="sidebar-section">Navigation</div>
@@ -535,7 +635,7 @@ $section = $_GET['section'] ?? 'dashboard';
             </a>
 
             <div class="sidebar-section">Vues</div>
-            <a href="enregistrer.html">
+            <a href="bdd.php">
                 <span class="nav-icon">🗄️</span> Voir la BDD
             </a>
 
@@ -567,9 +667,14 @@ $section = $_GET['section'] ?? 'dashboard';
                     echo $titles[$section] ?? 'Admin';
                     ?>
                 </h1>
-                <div class="user-badge">
+                <div class="user-badge" onclick="window.location='?section=edit_user&id=<?= $admin_id ?>'">
+                    <?php if ($adminPhoto): ?>
+                        <img src="<?= $adminPhoto ?>" class="profile-photo" alt="Avatar">
+                    <?php else: ?>
+                        <span class="nav-icon">👤</span>
+                    <?php endif; ?>
                     <span class="role-tag">Admin</span>
-                    <?= htmlspecialchars($_SESSION['user']) ?>
+                    <?= htmlspecialchars($adminFullName ?? '') ?>
                 </div>
             </div>
 
@@ -639,6 +744,7 @@ $section = $_GET['section'] ?? 'dashboard';
                     <table class="admin-table">
                         <thead>
                             <tr>
+                                <th>Photo</th>
                                 <th>ID</th>
                                 <th>Nom</th>
                                 <th>Prénom</th>
@@ -647,10 +753,17 @@ $section = $_GET['section'] ?? 'dashboard';
                         </thead>
                         <tbody>
                             <?php
-                            $r = mysqli_query($conn, "SELECT * FROM etudiants ORDER BY id_etudiant DESC LIMIT 5");
+                            $r = mysqli_query($conn, "SELECT e.*, u.photo FROM etudiants e LEFT JOIN users u ON u.login = e.email ORDER BY id_etudiant DESC LIMIT 5");
                             while ($row = mysqli_fetch_assoc($r)):
                                 ?>
                                 <tr>
+                                    <td>
+                                        <?php if ($row['photo']): ?>
+                                            <img src="<?= $row['photo'] ?>" class="profile-photo" alt="Avatar">
+                                        <?php else: ?>
+                                            <span class="nav-icon">👤</span>
+                                        <?php endif; ?>
+                                    </td>
                                     <td class="id-cell">#
                                         <?= $row['id_etudiant'] ?>
                                     </td>
@@ -672,10 +785,15 @@ $section = $_GET['section'] ?? 'dashboard';
             <?php elseif ($section === 'etudiants'): ?>
                 <!-- ============ LISTE ÉTUDIANTS ============ -->
                 <div class="panel">
-                    <h2>👥 Liste des étudiants</h2>
-                    <table class="admin-table">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                        <h2>👥 Liste des étudiants</h2>
+                        <input type="text" class="search-input" placeholder="🔍 Rechercher un étudiant..."
+                            onkeyup="filterTable(this, 'table-students')">
+                    </div>
+                    <table class="admin-table" id="table-students">
                         <thead>
                             <tr>
+                                <th>Photo</th>
                                 <th>ID</th>
                                 <th>Nom</th>
                                 <th>Prénom</th>
@@ -687,10 +805,17 @@ $section = $_GET['section'] ?? 'dashboard';
                         </thead>
                         <tbody>
                             <?php
-                            $r = mysqli_query($conn, "SELECT * FROM etudiants ORDER BY id_etudiant");
+                            $r = mysqli_query($conn, "SELECT e.*, u.photo FROM etudiants e LEFT JOIN users u ON u.login = e.email ORDER BY id_etudiant");
                             while ($row = mysqli_fetch_assoc($r)):
                                 ?>
                                 <tr>
+                                    <td>
+                                        <?php if ($row['photo']): ?>
+                                            <img src="<?= $row['photo'] ?>" class="profile-photo" alt="Avatar">
+                                        <?php else: ?>
+                                            <span class="nav-icon">👤</span>
+                                        <?php endif; ?>
+                                    </td>
                                     <td class="id-cell">#
                                         <?= $row['id_etudiant'] ?>
                                     </td>
@@ -721,10 +846,15 @@ $section = $_GET['section'] ?? 'dashboard';
             <?php elseif ($section === 'formateurs'): ?>
                 <!-- ============ LISTE FORMATEURS ============ -->
                 <div class="panel">
-                    <h2>🎓 Liste des formateurs</h2>
-                    <table class="admin-table">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                        <h2>🎓 Liste des formateurs</h2>
+                        <input type="text" class="search-input" placeholder="🔍 Rechercher un formateur..."
+                            onkeyup="filterTable(this, 'table-trainers')">
+                    </div>
+                    <table class="admin-table" id="table-trainers">
                         <thead>
                             <tr>
+                                <th>Photo</th>
                                 <th>ID</th>
                                 <th>Nom</th>
                                 <th>Prénom</th>
@@ -735,10 +865,17 @@ $section = $_GET['section'] ?? 'dashboard';
                         </thead>
                         <tbody>
                             <?php
-                            $r = mysqli_query($conn, "SELECT * FROM formateurs ORDER BY id_formateur");
+                            $r = mysqli_query($conn, "SELECT f.*, u.photo FROM formateurs f LEFT JOIN users u ON u.login = f.email ORDER BY id_formateur");
                             while ($row = mysqli_fetch_assoc($r)):
                                 ?>
                                 <tr>
+                                    <td>
+                                        <?php if ($row['photo']): ?>
+                                            <img src="<?= $row['photo'] ?>" class="profile-photo" alt="Avatar">
+                                        <?php else: ?>
+                                            <span class="nav-icon">👤</span>
+                                        <?php endif; ?>
+                                    </td>
                                     <td class="id-cell">#
                                         <?= $row['id_formateur'] ?>
                                     </td>
@@ -780,7 +917,7 @@ $section = $_GET['section'] ?? 'dashboard';
                         </thead>
                         <tbody>
                             <?php
-                            $r = mysqli_query($conn, "SELECT f.*, fo.nom as f_nom, fo.prenom as f_prenom FROM formations f LEFT JOIN formateurs fo ON f.id_formateur=fo.id_formateur ORDER BY f.id_formation");
+                            $r = mysqli_query($conn, "SELECT f.*, fo.nom as f_nom, fo.prenom as f_prenom, u.photo as f_photo FROM formations f LEFT JOIN formateurs fo ON f.id_formateur=fo.id_formateur LEFT JOIN users u ON u.login = fo.email ORDER BY f.id_formation");
                             while ($row = mysqli_fetch_assoc($r)):
                                 ?>
                                 <tr>
@@ -797,8 +934,18 @@ $section = $_GET['section'] ?? 'dashboard';
                                             <?= $row['niveau'] ?>
                                         </span></td>
                                     <td>
-                                        <?= $row['f_prenom'] ?>
-                                        <?= $row['f_nom'] ?>
+                                        <div style="display:flex; align-items:center; gap:8px;">
+                                            <?php if ($row['f_photo'] ?? ''): ?>
+                                                <img src="<?= $row['f_photo'] ?>" class="profile-photo"
+                                                    style="width:25px; height:25px;" alt="Avatar">
+                                            <?php else: ?>
+                                                <span class="nav-icon" style="font-size:1rem;">👤</span>
+                                            <?php endif; ?>
+                                            <div>
+                                                <?= htmlspecialchars($row['f_prenom'] ?? '') ?>
+                                                <?= htmlspecialchars($row['f_nom'] ?? '') ?>
+                                            </div>
+                                        </div>
                                     </td>
                                     <td><a href="?section=formations&delete_formation=<?= $row['id_formation'] ?>"
                                             class="btn-delete" onclick="return confirm('Supprimer cette formation ?')">🗑️
@@ -860,14 +1007,24 @@ $section = $_GET['section'] ?? 'dashboard';
                         </thead>
                         <tbody>
                             <?php
-                            $r = mysqli_query($conn, "SELECT n.note, e.nom, e.prenom, m.nom_module FROM notes n JOIN etudiants e ON n.id_etudiant=e.id_etudiant JOIN modules m ON n.id_module=m.id_module ORDER BY n.id_note DESC");
+                            $r = mysqli_query($conn, "SELECT n.note, e.nom, e.prenom, u.photo, m.nom_module FROM notes n JOIN etudiants e ON n.id_etudiant=e.id_etudiant JOIN modules m ON n.id_module=m.id_module LEFT JOIN users u ON u.login = e.email ORDER BY n.id_note DESC");
                             while ($row = mysqli_fetch_assoc($r)):
                                 $color = $row['note'] >= 15 ? 'emerald' : ($row['note'] >= 10 ? 'amber' : 'rose');
                                 ?>
                                 <tr>
                                     <td class="name-cell">
-                                        <?= $row['nom'] ?>
-                                        <?= $row['prenom'] ?>
+                                        <div style="display:flex; align-items:center; gap:8px;">
+                                            <?php if ($row['photo'] ?? ''): ?>
+                                                <img src="<?= $row['photo'] ?>" class="profile-photo"
+                                                    style="width:25px; height:25px;" alt="Avatar">
+                                            <?php else: ?>
+                                                <span class="nav-icon" style="font-size:1rem;">👤</span>
+                                            <?php endif; ?>
+                                            <div>
+                                                <?= htmlspecialchars($row['nom'] ?? '') ?>
+                                                <?= htmlspecialchars($row['prenom'] ?? '') ?>
+                                            </div>
+                                        </div>
                                     </td>
                                     <td>
                                         <?= $row['nom_module'] ?>
@@ -921,12 +1078,19 @@ $section = $_GET['section'] ?? 'dashboard';
             <?php elseif ($section === 'users'): ?>
                 <!-- ============ UTILISATEURS ============ -->
                 <div class="panel">
-                    <h2>🔑 Gestion des utilisateurs</h2>
-                    <table class="admin-table">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                        <h2>🔑 Gestion des utilisateurs</h2>
+                        <input type="text" class="search-input" placeholder="🔍 Rechercher un compte..."
+                            onkeyup="filterTable(this, 'table-users')">
+                    </div>
+                    <table class="admin-table" id="table-users">
                         <thead>
                             <tr>
+                                <th>Photo</th>
                                 <th>ID</th>
-                                <th>Login</th>
+                                <th>Email / Login</th>
+                                <th>Prénom</th>
+                                <th>Nom</th>
                                 <th>Rôle</th>
                                 <th>Action</th>
                             </tr>
@@ -938,22 +1102,149 @@ $section = $_GET['section'] ?? 'dashboard';
                                 $roleColor = ['admin' => 'indigo', 'enseignant' => 'violet', 'etudiant' => 'cyan'][$row['role']] ?? 'amber';
                                 ?>
                                 <tr>
+                                    <td>
+                                        <?php if ($row['photo']): ?>
+                                            <img src="<?= $row['photo'] ?>" class="profile-photo" alt="Profile">
+                                        <?php else: ?>
+                                            <span class="nav-icon">👤</span>
+                                        <?php endif; ?>
+                                    </td>
                                     <td class="id-cell">#
                                         <?= $row['id'] ?>
                                     </td>
                                     <td class="name-cell">
-                                        <?= $row['login'] ?>
+                                        <?= htmlspecialchars($row['login'] ?? '') ?>
+                                    </td>
+                                    <td>
+                                        <?= htmlspecialchars($row['prenom'] ?? '') ?>
+                                    </td>
+                                    <td>
+                                        <?= htmlspecialchars($row['nom'] ?? '') ?>
                                     </td>
                                     <td><span class="badge badge-<?= $roleColor ?>">
                                             <?= ucfirst($row['role']) ?>
                                         </span></td>
-                                    <td><a href="?section=users&delete_user=<?= $row['id'] ?>" class="btn-delete"
-                                            onclick="return confirm('Supprimer cet utilisateur ?')">🗑️ Suppr.</a></td>
+                                    <td>
+                                        <div style="display:flex; gap:5px;">
+                                            <a href="?section=edit_user&id=<?= $row['id'] ?>" class="btn-submit"
+                                                style="padding: 5px 10px; margin:0; font-size:0.75rem;">✏️ Editer</a>
+                                            <a href="?section=users&delete_user=<?= $row['id'] ?>" class="btn-delete"
+                                                onclick="return confirm('Supprimer cet utilisateur ?')">🗑️ Suppr.</a>
+                                        </div>
+                                    </td>
                                 </tr>
                             <?php endwhile; ?>
                         </tbody>
                     </table>
                 </div>
+
+            <?php elseif ($section === 'edit_user'):
+                $id = intval($_GET['id']);
+                $userRes = mysqli_query($conn, "SELECT * FROM users WHERE id=$id");
+                $u = mysqli_fetch_assoc($userRes);
+                ?>
+                <!-- ============ FORMULAIRE ÉDITION PROFIL ============ -->
+                <div class="panel">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                        <h2>✏️ Modifier Profil : <?= htmlspecialchars($u['login'] ?? '') ?></h2>
+                        <a href="?section=users" class="back-btn" style="margin:0;">⬅️ Retour</a>
+                    </div>
+
+                    <form method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="user_id" value="<?= $u['id'] ?>">
+
+                        <div class="profile-header">
+                            <?php if ($u['photo']): ?>
+                                <img src="<?= $u['photo'] ?>" class="profile-photo-lg" id="previewImg">
+                            <?php else: ?>
+                                <div class="profile-photo-lg"
+                                    style="display:flex; align-items:center; justify-content:center; background:var(--bg-glass); font-size:3rem;">
+                                    👤</div>
+                            <?php endif; ?>
+
+                            <label class="profile-upload-btn">
+                                📷 Changer la photo
+                                <input type="file" name="photo" class="hidden-input" accept="image/*"
+                                    onchange="previewFile(this)">
+                            </label>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Prénom</label>
+                                <input type="text" name="prenom" value="<?= htmlspecialchars($u['prenom'] ?? '') ?>"
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <label>Nom</label>
+                                <input type="text" name="nom" value="<?= htmlspecialchars($u['nom'] ?? '') ?>" required>
+                            </div>
+                        </div>
+
+                        <button type="submit" name="edit_user_profile" class="btn-submit">💾 Enregistrer les
+                            modifications</button>
+                    </form>
+                </div>
+
+                <script>
+                    function previewFile(input) {
+                        if (input.files && input.files[0]) {
+                            var reader = new FileReader();
+                            reader.onload = function (e) {
+                                var preview = document.getElementById('previewImg') || document.querySelector('.profile-photo-lg');
+                                if (preview.tagName === 'IMG') {
+                                    preview.src = e.target.result;
+                                } else {
+                                    var img = document.createElement('img');
+                                    img.src = e.target.result;
+                                    img.className = 'profile-photo-lg';
+                                    img.id = 'previewImg';
+                                    // Remplacer le div ou l'icône par l'image
+                                    preview.parentNode.replaceChild(img, preview);
+                                }
+                            }
+                            reader.readAsDataURL(input.files[0]);
+                        }
+                    }
+
+                    // Drag & Drop
+                    const dropZone = document.querySelector('.profile-header');
+                    const fileInput = document.querySelector('input[name="photo"]');
+
+                    if (dropZone && fileInput) {
+                        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                            dropZone.addEventListener(eventName, e => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }, false);
+                        });
+
+                        ['dragenter', 'dragover'].forEach(eventName => {
+                            dropZone.addEventListener(eventName, () => dropZone.classList.add('drag-over'), false);
+                        });
+
+                        ['dragleave', 'drop'].forEach(eventName => {
+                            dropZone.addEventListener(eventName, () => dropZone.classList.remove('drag-over'), false);
+                        });
+
+                        dropZone.addEventListener('drop', e => {
+                            const dt = e.dataTransfer;
+                            const files = dt.files;
+                            fileInput.files = files;
+                            previewFile(fileInput);
+                        }
+                            , false);
+
+                        // Click to trigger file input
+                        dropZone.style.cursor = 'pointer';
+                        dropZone.addEventListener('click', (e) => {
+                            // Empêcher le clic si on clique directement sur l'input (pour éviter récursion)
+                            if (e.target !== fileInput && e.target.tagName !== 'LABEL') {
+                                fileInput.click();
+                            }
+                        });
+                    }
+                </script>
 
             <?php elseif ($section === 'add_etudiant'): ?>
                 <!-- ============ FORMULAIRE AJOUT ÉTUDIANT ============ -->
@@ -971,15 +1262,15 @@ $section = $_GET['section'] ?? 'dashboard';
                             </div>
                             <div class="form-group">
                                 <label>Date de naissance</label>
-                                <input type="date" name="date_naissance" required>
+                                <input type="date" name="date_naissance">
                             </div>
                             <div class="form-group">
                                 <label>Email</label>
-                                <input type="email" name="email" required>
+                                <input type="email" name="email">
                             </div>
                             <div class="form-group">
                                 <label>Téléphone</label>
-                                <input type="text" name="telephone" required>
+                                <input type="text" name="telephone">
                             </div>
                         </div>
                         <button type="submit" name="add_etudiant" class="btn-submit">✅ Enregistrer</button>
@@ -1002,11 +1293,11 @@ $section = $_GET['section'] ?? 'dashboard';
                             </div>
                             <div class="form-group">
                                 <label>Spécialité</label>
-                                <input type="text" name="specialite" required>
+                                <input type="text" name="specialite">
                             </div>
                             <div class="form-group">
                                 <label>Email</label>
-                                <input type="email" name="email" required>
+                                <input type="email" name="email">
                             </div>
                         </div>
                         <button type="submit" name="add_formateur" class="btn-submit">✅ Enregistrer</button>
@@ -1101,6 +1392,18 @@ $section = $_GET['section'] ?? 'dashboard';
             <?php endif; ?>
         </main>
     </div>
+    <script>
+        function filterTable(input, tableId) {
+            let filter = input.value.toLowerCase();
+            let table = document.getElementById(tableId);
+            let rows = table.querySelectorAll('tbody tr');
+
+            rows.forEach(row => {
+                let text = row.textContent.toLowerCase();
+                row.style.display = text.includes(filter) ? '' : 'none';
+            });
+        }
+    </script>
 </body>
 
 </html>

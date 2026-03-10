@@ -1052,3 +1052,131 @@ tbody td {
         left: 1.2rem;
     }
 }
+
+/* ---- Profile Styles ---- */
+.profile-photo {
+    width: 45px;
+    height: 45px;
+    min-width: 45px;
+    min-height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--accent-indigo);
+    background: var(--bg-glass);
+    display: block;
+}
+
+.profile-photo-lg {
+    width: 150px;
+    height: 150px;
+    min-width: 150px;
+    min-height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--accent-indigo);
+    box-shadow: var(--shadow-glow);
+    margin-bottom: 1.5rem;
+    cursor: pointer;
+    transition: var(--transition);
+    display: block;
+}
+
+.profile-photo-lg:hover {
+    filter: brightness(1.2);
+    transform: scale(1.02);
+}
+
+.profile-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 2rem;
+    padding: 2rem;
+    border: 2px dashed transparent;
+    border-radius: var(--radius);
+    transition: var(--transition);
+}
+
+.profile-header.drag-over {
+    border-color: var(--accent-indigo);
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.profile-upload-btn {
+    display: inline-block;
+    padding: 8px 16px;
+    background: var(--bg-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: var(--transition);
+}
+
+.profile-upload-btn:hover {
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--text-primary);
+    border-color: var(--accent-indigo);
+}
+
+.hidden-input {
+    display: none;
+}
+
+/* Sidebar Profile */
+.sidebar-profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 1rem;
+    border-bottom: 1px solid var(--border-glass);
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.sidebar-profile .profile-photo {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 0.8rem;
+    border-width: 3px;
+}
+
+.sidebar-profile .user-name {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.sidebar-profile .user-role {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* User Badge Enhancement */
+.user-badge {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 16px 6px 6px;
+    background: var(--bg-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: 999px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    transition: var(--transition);
+}
+
+.user-badge:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--border-glass-hover);
+}
+
+.user-badge .profile-photo {
+    width: 32px;
+    height: 32px;
+    border-width: 1px;
+}

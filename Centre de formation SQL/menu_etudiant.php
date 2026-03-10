@@ -6,6 +6,15 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'etudiant') {
 }
 include("Connexion.php");
 
+// Récupérer les infos du profil de l'utilisateur connecté
+$uid = $_SESSION['user_id'] ?? 0;
+$rU = mysqli_query($conn, "SELECT * FROM users WHERE id=$uid");
+$userData = mysqli_fetch_assoc($rU);
+$userPhoto = $userData['photo'] ?? '';
+$userFullName = trim(($userData['prenom'] ?? '') . ' ' . ($userData['nom'] ?? ''));
+if ($userFullName == '')
+    $userFullName = $_SESSION['user'] ?? 'Étudiant';
+
 $section = $_GET['section'] ?? 'dashboard';
 
 // Essayer de lier le compte utilisateur à un étudiant via le login
@@ -40,33 +49,41 @@ if ($etudiant_id) {
 ?>
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>👤 Étudiant — Centre de Formation</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
-        .admin-layout { display: flex; min-height: 100vh; }
-        
+        .admin-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
         .sidebar {
             width: 260px;
             background: var(--bg-secondary);
             border-right: 1px solid var(--border-glass);
             padding: 1.5rem 0;
             position: fixed;
-            top: 0; left: 0; bottom: 0;
+            top: 0;
+            left: 0;
+            bottom: 0;
             z-index: 50;
             overflow-y: auto;
         }
-        
+
         .sidebar-brand {
             padding: 0 1.5rem 1.5rem;
             border-bottom: 1px solid var(--border-glass);
             margin-bottom: 1rem;
         }
-        
+
         .sidebar-brand h2 {
             font-size: 1.1rem;
             font-weight: 800;
@@ -74,9 +91,12 @@ if ($etudiant_id) {
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        
-        .sidebar-brand small { color: var(--text-muted); font-size: 0.75rem; }
-        
+
+        .sidebar-brand small {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+
         .sidebar-section {
             padding: 0.5rem 1rem;
             font-size: 0.7rem;
@@ -85,7 +105,7 @@ if ($etudiant_id) {
             color: var(--text-muted);
             font-weight: 700;
         }
-        
+
         .sidebar a {
             display: flex;
             align-items: center;
@@ -98,21 +118,24 @@ if ($etudiant_id) {
             transition: var(--transition);
             border-left: 3px solid transparent;
         }
-        
-        .sidebar a:hover, .sidebar a.active {
+
+        .sidebar a:hover,
+        .sidebar a.active {
             color: var(--text-primary);
             background: rgba(34, 211, 238, 0.08);
             border-left-color: var(--accent-cyan);
         }
-        
-        .sidebar a .nav-icon { font-size: 1.1rem; }
-        
+
+        .sidebar a .nav-icon {
+            font-size: 1.1rem;
+        }
+
         .main-content {
             margin-left: 260px;
             flex: 1;
             padding: 2rem 2.5rem;
         }
-        
+
         .top-bar {
             display: flex;
             justify-content: space-between;
@@ -121,9 +144,12 @@ if ($etudiant_id) {
             padding-bottom: 1.5rem;
             border-bottom: 1px solid var(--border-glass);
         }
-        
-        .top-bar h1 { font-size: 1.6rem; font-weight: 800; }
-        
+
+        .top-bar h1 {
+            font-size: 1.6rem;
+            font-weight: 800;
+        }
+
         .user-badge {
             display: flex;
             align-items: center;
@@ -135,7 +161,7 @@ if ($etudiant_id) {
             font-size: 0.85rem;
             color: var(--text-secondary);
         }
-        
+
         .user-badge .role-tag {
             padding: 2px 10px;
             background: linear-gradient(135deg, var(--accent-cyan), #67e8f9);
@@ -145,14 +171,14 @@ if ($etudiant_id) {
             font-weight: 700;
             text-transform: uppercase;
         }
-        
+
         .dash-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1.2rem;
             margin-bottom: 2.5rem;
         }
-        
+
         .dash-card {
             background: var(--bg-card);
             border: 1px solid var(--border-glass);
@@ -163,25 +189,34 @@ if ($etudiant_id) {
             position: relative;
             overflow: hidden;
         }
-        
+
         .dash-card::after {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0;
+            top: 0;
+            left: 0;
+            right: 0;
             height: 3px;
             background: linear-gradient(90deg, var(--accent-cyan), #67e8f9);
             opacity: 0;
             transition: var(--transition);
         }
-        
+
         .dash-card:hover {
             transform: translateY(-4px);
             border-color: rgba(34, 211, 238, 0.3);
             box-shadow: 0 8px 30px rgba(34, 211, 238, 0.12);
         }
-        
-        .dash-card:hover::after { opacity: 1; }
-        .dash-card .card-icon { font-size: 1.5rem; margin-bottom: 0.8rem; }
+
+        .dash-card:hover::after {
+            opacity: 1;
+        }
+
+        .dash-card .card-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+
         .dash-card .card-value {
             font-size: 2rem;
             font-weight: 900;
@@ -189,6 +224,7 @@ if ($etudiant_id) {
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+
         .dash-card .card-label {
             font-size: 0.8rem;
             color: var(--text-muted);
@@ -196,7 +232,7 @@ if ($etudiant_id) {
             letter-spacing: 1px;
             margin-top: 4px;
         }
-        
+
         .panel {
             background: var(--bg-card);
             border: 1px solid var(--border-glass);
@@ -205,7 +241,7 @@ if ($etudiant_id) {
             backdrop-filter: blur(16px);
             margin-bottom: 2rem;
         }
-        
+
         .panel h2 {
             font-size: 1.2rem;
             font-weight: 700;
@@ -214,13 +250,13 @@ if ($etudiant_id) {
             align-items: center;
             gap: 8px;
         }
-        
+
         .admin-table {
             width: 100%;
             border-collapse: collapse;
             font-size: 0.88rem;
         }
-        
+
         .admin-table th {
             padding: 12px 16px;
             text-align: left;
@@ -228,18 +264,20 @@ if ($etudiant_id) {
             text-transform: uppercase;
             letter-spacing: 1.2px;
             color: var(--text-muted);
-            background: rgba(255,255,255,0.02);
+            background: rgba(255, 255, 255, 0.02);
             border-bottom: 1px solid var(--border-glass);
         }
-        
+
         .admin-table td {
             padding: 12px 16px;
             color: var(--text-secondary);
-            border-bottom: 1px solid rgba(255,255,255,0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
         }
-        
-        .admin-table tr:hover td { background: rgba(34, 211, 238, 0.04); }
-        
+
+        .admin-table tr:hover td {
+            background: rgba(34, 211, 238, 0.04);
+        }
+
         .perm-info {
             display: flex;
             align-items: center;
@@ -252,22 +290,24 @@ if ($etudiant_id) {
             color: var(--text-secondary);
             margin-bottom: 1.5rem;
         }
-        
-        .perm-info .perm-icon { font-size: 1.3rem; }
-        
+
+        .perm-info .perm-icon {
+            font-size: 1.3rem;
+        }
+
         .profil-card {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
         }
-        
+
         .profil-item {
             padding: 1rem 1.2rem;
-            background: rgba(255,255,255,0.02);
+            background: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--border-glass);
             border-radius: 12px;
         }
-        
+
         .profil-item .profil-label {
             font-size: 0.72rem;
             text-transform: uppercase;
@@ -276,32 +316,32 @@ if ($etudiant_id) {
             font-weight: 600;
             margin-bottom: 6px;
         }
-        
+
         .profil-item .profil-value {
             font-size: 1rem;
             color: var(--text-primary);
             font-weight: 600;
         }
-        
+
         .bulletin-header {
             text-align: center;
             padding: 1.5rem;
-            background: linear-gradient(135deg, rgba(34,211,238,0.08), rgba(99,102,241,0.08));
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.08), rgba(99, 102, 241, 0.08));
             border-radius: 12px;
             margin-bottom: 1.5rem;
         }
-        
+
         .bulletin-header h3 {
             font-size: 1.1rem;
             font-weight: 800;
             margin-bottom: 0.3rem;
         }
-        
+
         .bulletin-header p {
             color: var(--text-muted);
             font-size: 0.85rem;
         }
-        
+
         .moyenne-box {
             display: flex;
             align-items: center;
@@ -309,79 +349,110 @@ if ($etudiant_id) {
             gap: 15px;
             padding: 1.5rem;
             margin-top: 1rem;
-            background: rgba(255,255,255,0.02);
+            background: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--border-glass);
             border-radius: 12px;
             text-align: center;
         }
-        
+
         .moyenne-box .moy-value {
             font-size: 2.5rem;
             font-weight: 900;
         }
-        
+
         .moyenne-box .moy-label {
             font-size: 0.8rem;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 1px;
         }
-        
+
         @media (max-width: 768px) {
-            .sidebar { display: none; }
-            .main-content { margin-left: 0; padding: 1rem; }
-            .dash-grid { grid-template-columns: repeat(2, 1fr); }
-            .profil-card { grid-template-columns: 1fr; }
+            .sidebar {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .dash-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .profil-card {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
-    
+
     <div class="admin-layout">
         <nav class="sidebar">
             <div class="sidebar-brand">
                 <h2>👤 Centre Formation</h2>
                 <small>Espace Étudiant</small>
             </div>
-            
+
+            <!-- Profile Section -->
+            <div class="sidebar-profile">
+                <?php if ($userPhoto): ?>
+                    <img src="<?= $userPhoto ?>" class="profile-photo" alt="Profile">
+                <?php else: ?>
+                    <div class="profile-photo"
+                        style="display:flex; align-items:center; justify-content:center; background:var(--bg-glass); font-size:1.5rem;">
+                        👤</div>
+                <?php endif; ?>
+                <div class="user-name"><?= htmlspecialchars($userFullName ?? '') ?></div>
+                <div class="user-role">Étudiant</div>
+            </div>
+
             <div class="sidebar-section">Navigation</div>
-            <a href="?section=dashboard" class="<?= $section=='dashboard'?'active':'' ?>">
+            <a href="?section=dashboard" class="<?= $section == 'dashboard' ? 'active' : '' ?>">
                 <span class="nav-icon">📊</span> Tableau de bord
             </a>
-            
+
             <div class="sidebar-section">Mon espace</div>
-            <a href="?section=profil" class="<?= $section=='profil'?'active':'' ?>">
+            <a href="?section=profil" class="<?= $section == 'profil' ? 'active' : '' ?>">
                 <span class="nav-icon">👤</span> Mon profil
             </a>
-            <a href="?section=mes_notes" class="<?= $section=='mes_notes'?'active':'' ?>">
+            <a href="?section=mes_notes" class="<?= $section == 'mes_notes' ? 'active' : '' ?>">
                 <span class="nav-icon">📝</span> Mes notes
             </a>
-            <a href="?section=bulletin" class="<?= $section=='bulletin'?'active':'' ?>">
+            <a href="?section=bulletin" class="<?= $section == 'bulletin' ? 'active' : '' ?>">
                 <span class="nav-icon">📄</span> Mon bulletin
             </a>
-            
+
             <div class="sidebar-section">Consulter</div>
-            <a href="?section=formations" class="<?= $section=='formations'?'active':'' ?>">
+            <a href="?section=formations" class="<?= $section == 'formations' ? 'active' : '' ?>">
                 <span class="nav-icon">📚</span> Formations
             </a>
-            <a href="?section=modules" class="<?= $section=='modules'?'active':'' ?>">
+            <a href="?section=modules" class="<?= $section == 'modules' ? 'active' : '' ?>">
                 <span class="nav-icon">📦</span> Modules
             </a>
-            <a href="?section=salles" class="<?= $section=='salles'?'active':'' ?>">
+            <a href="?section=salles" class="<?= $section == 'salles' ? 'active' : '' ?>">
                 <span class="nav-icon">🏫</span> Salles
             </a>
-            <a href="?section=formateurs" class="<?= $section=='formateurs'?'active':'' ?>">
+
+            <div class="sidebar-section">Vues</div>
+            <a href="bdd.php">
+                <span class="nav-icon">🗄️</span> Voir la BDD
+            </a>
+            <a href="?section=formateurs" class="<?= $section == 'formateurs' ? 'active' : '' ?>">
                 <span class="nav-icon">🎓</span> Formateurs
             </a>
-            
+
             <div class="sidebar-section" style="margin-top:auto;"></div>
             <a href="login.php?logout=1" style="color:var(--accent-rose);">
                 <span class="nav-icon">🚪</span> Déconnexion
             </a>
         </nav>
-        
+
         <main class="main-content">
             <div class="top-bar">
                 <h1>
@@ -399,17 +470,23 @@ if ($etudiant_id) {
                     echo $titles[$section] ?? 'Étudiant';
                     ?>
                 </h1>
-                <div class="user-badge">
+                <div class="user-badge" onclick="window.location='?section=profil'">
+                    <?php if ($userPhoto): ?>
+                        <img src="<?= $userPhoto ?>" class="profile-photo" alt="Avatar">
+                    <?php else: ?>
+                        <span class="nav-icon">👤</span>
+                    <?php endif; ?>
                     <span class="role-tag">Étudiant</span>
-                    <?= htmlspecialchars($_SESSION['user']) ?>
+                    <?= htmlspecialchars($userFullName ?? '') ?>
                 </div>
             </div>
-            
+
             <div class="perm-info">
                 <span class="perm-icon">🔒</span>
-                <span><strong>Permissions :</strong> Consultation de votre profil, notes et bulletin · Accès en lecture aux formations, modules, salles et formateurs · Aucune modification autorisée</span>
+                <span><strong>Permissions :</strong> Consultation de votre profil, notes et bulletin · Accès en lecture
+                    aux formations, modules, salles et formateurs · Aucune modification autorisée</span>
             </div>
-            
+
             <?php if ($section === 'dashboard'): ?>
                 <div class="dash-grid">
                     <div class="dash-card">
@@ -433,230 +510,313 @@ if ($etudiant_id) {
                         <div class="card-label">Modules</div>
                     </div>
                 </div>
-                
+
                 <?php if ($etudiant): ?>
-                <div class="panel">
-                    <h2>👋 Bienvenue, <?= $etudiant['prenom'] ?> <?= $etudiant['nom'] ?></h2>
-                    <p style="color:var(--text-muted);">Consultez vos notes, votre bulletin et les informations relatives à votre formation.</p>
-                </div>
+                    <div class="panel">
+                        <h2>👋 Bienvenue, <?= $etudiant['prenom'] ?>         <?= $etudiant['nom'] ?></h2>
+                        <p style="color:var(--text-muted);">Consultez vos notes, votre bulletin et les informations relatives à
+                            votre formation.</p>
+                    </div>
                 <?php else: ?>
-                <div class="panel">
-                    <h2>👋 Bienvenue, <?= htmlspecialchars($_SESSION['user']) ?></h2>
-                    <p style="color:var(--text-muted);">Votre compte n'est pas encore lié à un profil étudiant. Contactez l'administration pour associer votre compte.</p>
-                </div>
+                    <div class="panel">
+                        <h2>👋 Bienvenue, <?= htmlspecialchars($_SESSION['user'] ?? '') ?></h2>
+                        <p style="color:var(--text-muted);">Votre compte n'est pas encore lié à un profil étudiant. Contactez
+                            l'administration pour associer votre compte.</p>
+                    </div>
                 <?php endif; ?>
-                
+
                 <?php if (count($mesNotes) > 0): ?>
-                <div class="panel">
-                    <h2>📝 Dernières notes</h2>
-                    <table class="admin-table">
-                        <thead><tr><th>Module</th><th>Note</th></tr></thead>
-                        <tbody>
-                        <?php foreach (array_slice($mesNotes, 0, 5) as $n):
-                            $color = $n['note'] >= 15 ? 'emerald' : ($n['note'] >= 10 ? 'amber' : 'rose');
-                        ?>
-                            <tr>
-                                <td class="name-cell"><?= $n['nom_module'] ?></td>
-                                <td><span class="badge badge-<?= $color ?>"><?= $n['note'] ?>/20</span></td>
-                            </tr>
-                        <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
+                    <div class="panel">
+                        <h2>📝 Dernières notes</h2>
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Module</th>
+                                    <th>Note</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach (array_slice($mesNotes, 0, 5) as $n):
+                                    $color = $n['note'] >= 15 ? 'emerald' : ($n['note'] >= 10 ? 'amber' : 'rose');
+                                    ?>
+                                    <tr>
+                                        <td class="name-cell"><?= $n['nom_module'] ?></td>
+                                        <td><span class="badge badge-<?= $color ?>"><?= $n['note'] ?>/20</span></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
                 <?php endif; ?>
-                
-            <?php elseif ($section === 'profil'): ?>
-                <?php if ($etudiant): ?>
+
+            <?php elseif ($section === 'profil'):
+                $uid = $_SESSION['user_id'];
+                $rU = mysqli_query($conn, "SELECT * FROM users WHERE id=$uid");
+                $uAccount = mysqli_fetch_assoc($rU);
+                ?>
                 <div class="panel">
-                    <h2>👤 Mes informations personnelles</h2>
+                    <div class="profile-header">
+                        <?php if ($uAccount['photo']): ?>
+                            <img src="<?= $uAccount['photo'] ?>" class="profile-photo-lg">
+                        <?php else: ?>
+                            <div class="profile-photo-lg"
+                                style="display:flex; align-items:center; justify-content:center; background:var(--bg-glass); font-size:3rem;">
+                                👤</div>
+                        <?php endif; ?>
+                        <h2 style="margin-top:1rem;">
+                            <?= htmlspecialchars(($uAccount['prenom'] ?? '') . ' ' . ($uAccount['nom'] ?? '')) ?>
+                        </h2>
+                        <p style="color:var(--text-muted);">@<?= htmlspecialchars($uAccount['login'] ?? '') ?></p>
+                    </div>
+
                     <div class="profil-card">
                         <div class="profil-item">
-                            <div class="profil-label">Nom</div>
-                            <div class="profil-value"><?= $etudiant['nom'] ?></div>
+                            <div class="profil-label">Prénom (Compte)</div>
+                            <div class="profil-value"><?= htmlspecialchars($uAccount['prenom'] ?? '—') ?></div>
                         </div>
                         <div class="profil-item">
-                            <div class="profil-label">Prénom</div>
-                            <div class="profil-value"><?= $etudiant['prenom'] ?></div>
-                        </div>
-                        <div class="profil-item">
-                            <div class="profil-label">Date de naissance</div>
-                            <div class="profil-value"><?= $etudiant['date_naissance'] ?></div>
-                        </div>
-                        <div class="profil-item">
-                            <div class="profil-label">Email</div>
-                            <div class="profil-value"><?= $etudiant['email'] ?></div>
-                        </div>
-                        <div class="profil-item">
-                            <div class="profil-label">Téléphone</div>
-                            <div class="profil-value"><?= $etudiant['telephone'] ?></div>
-                        </div>
-                        <div class="profil-item">
-                            <div class="profil-label">Identifiant étudiant</div>
-                            <div class="profil-value">#<?= $etudiant['id_etudiant'] ?></div>
+                            <div class="profil-label">Nom (Compte)</div>
+                            <div class="profil-value"><?= htmlspecialchars($uAccount['nom'] ?? '—') ?></div>
                         </div>
                     </div>
+
+                    <?php if ($etudiant): ?>
+                        <h3
+                            style="margin: 2rem 0 1.2rem; font-size: 1.1rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.5rem;">
+                            📋 Détails du dossier étudiant</h3>
+                        <div class="profil-card">
+                            <div class="profil-item">
+                                <div class="profil-label">Nom (Dossier)</div>
+                                <div class="profil-value"><?= $etudiant['nom'] ?></div>
+                            </div>
+                            <div class="profil-item">
+                                <div class="profil-label">Prénom (Dossier)</div>
+                                <div class="profil-value"><?= $etudiant['prenom'] ?></div>
+                            </div>
+                            <div class="profil-item">
+                                <div class="profil-label">Date de naissance</div>
+                                <div class="profil-value"><?= $etudiant['date_naissance'] ?></div>
+                            </div>
+                            <div class="profil-item">
+                                <div class="profil-label">Email</div>
+                                <div class="profil-value"><?= $etudiant['email'] ?></div>
+                            </div>
+                            <div class="profil-item">
+                                <div class="profil-label">Téléphone</div>
+                                <div class="profil-value"><?= $etudiant['telephone'] ?></div>
+                            </div>
+                            <div class="profil-item">
+                                <div class="profil-label">ID Étudiant</div>
+                                <div class="profil-value">#<?= $etudiant['id_etudiant'] ?></div>
+                            </div>
+                        </div>
+                    <?php else: ?>
+                        <div
+                            style="margin-top:2rem; padding:1rem; background:rgba(251, 113, 133, 0.05); border:1px solid rgba(251, 113, 133, 0.2); border-radius:12px;">
+                            <p style="color:var(--accent-rose); font-size:0.9rem;">⚠️ Votre compte n'est pas encore lié à un
+                                dossier étudiant officiel.</p>
+                        </div>
+                    <?php endif; ?>
                 </div>
-                <?php else: ?>
-                <div class="panel">
-                    <h2>👤 Profil non lié</h2>
-                    <p style="color:var(--text-muted);">Votre compte utilisateur n'est pas encore rattaché à un profil étudiant dans la base de données. Veuillez contacter un administrateur.</p>
-                </div>
-                <?php endif; ?>
-                
+
             <?php elseif ($section === 'mes_notes'): ?>
                 <div class="panel">
                     <h2>📝 Toutes mes notes</h2>
                     <?php if (count($mesNotes) > 0): ?>
-                    <table class="admin-table">
-                        <thead><tr><th>Module</th><th>Coefficient</th><th>Note</th></tr></thead>
-                        <tbody>
-                        <?php foreach ($mesNotes as $n):
-                            $color = $n['note'] >= 15 ? 'emerald' : ($n['note'] >= 10 ? 'amber' : 'rose');
-                        ?>
-                            <tr>
-                                <td class="name-cell"><?= $n['nom_module'] ?></td>
-                                <td><span class="badge badge-amber">Coeff. <?= $n['coefficient'] ?></span></td>
-                                <td><span class="badge badge-<?= $color ?>"><?= $n['note'] ?>/20</span></td>
-                            </tr>
-                        <?php endforeach; ?>
-                        </tbody>
-                    </table>
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Module</th>
+                                    <th>Coefficient</th>
+                                    <th>Note</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($mesNotes as $n):
+                                    $color = $n['note'] >= 15 ? 'emerald' : ($n['note'] >= 10 ? 'amber' : 'rose');
+                                    ?>
+                                    <tr>
+                                        <td class="name-cell"><?= $n['nom_module'] ?></td>
+                                        <td><span class="badge badge-amber">Coeff. <?= $n['coefficient'] ?></span></td>
+                                        <td><span class="badge badge-<?= $color ?>"><?= $n['note'] ?>/20</span></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
                     <?php else: ?>
-                    <p style="color:var(--text-muted); text-align:center; padding:2rem;">Aucune note disponible pour le moment.</p>
+                        <p style="color:var(--text-muted); text-align:center; padding:2rem;">Aucune note disponible pour le
+                            moment.</p>
                     <?php endif; ?>
                 </div>
-                
+
             <?php elseif ($section === 'bulletin'): ?>
                 <div class="panel">
                     <div class="bulletin-header">
                         <h3>🏛️ Centre de Formation — Bulletin de notes</h3>
                         <?php if ($etudiant): ?>
-                        <p><?= $etudiant['prenom'] ?> <?= $etudiant['nom'] ?> — ID #<?= $etudiant['id_etudiant'] ?></p>
+                            <p><?= $etudiant['prenom'] ?>         <?= $etudiant['nom'] ?> — ID #<?= $etudiant['id_etudiant'] ?></p>
                         <?php else: ?>
-                        <p><?= htmlspecialchars($_SESSION['user']) ?></p>
+                            <p><?= htmlspecialchars($_SESSION['user']) ?></p>
                         <?php endif; ?>
                     </div>
-                    
+
                     <?php if (count($mesNotes) > 0): ?>
-                    <table class="admin-table">
-                        <thead><tr><th>Module</th><th>Coefficient</th><th>Note</th></tr></thead>
-                        <tbody>
-                        <?php 
-                        $totalPondere = 0;
-                        $totalCoeff = 0;
-                        foreach ($mesNotes as $n):
-                            $color = $n['note'] >= 15 ? 'emerald' : ($n['note'] >= 10 ? 'amber' : 'rose');
-                            $totalPondere += $n['note'] * $n['coefficient'];
-                            $totalCoeff += $n['coefficient'];
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Module</th>
+                                    <th>Coefficient</th>
+                                    <th>Note</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $totalPondere = 0;
+                                $totalCoeff = 0;
+                                foreach ($mesNotes as $n):
+                                    $color = $n['note'] >= 15 ? 'emerald' : ($n['note'] >= 10 ? 'amber' : 'rose');
+                                    $totalPondere += $n['note'] * $n['coefficient'];
+                                    $totalCoeff += $n['coefficient'];
+                                    ?>
+                                    <tr>
+                                        <td class="name-cell"><?= $n['nom_module'] ?></td>
+                                        <td><span class="badge badge-amber">Coeff. <?= $n['coefficient'] ?></span></td>
+                                        <td><span class="badge badge-<?= $color ?>"><?= $n['note'] ?>/20</span></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+
+                        <?php
+                        $moyPonderee = $totalCoeff > 0 ? round($totalPondere / $totalCoeff, 2) : 0;
+                        $moyColor = $moyPonderee >= 15 ? 'var(--accent-emerald)' : ($moyPonderee >= 10 ? 'var(--accent-amber)' : 'var(--accent-rose)');
+                        $decision = $moyPonderee >= 10 ? '✅ Admis(e)' : '❌ Ajourné(e)';
                         ?>
-                            <tr>
-                                <td class="name-cell"><?= $n['nom_module'] ?></td>
-                                <td><span class="badge badge-amber">Coeff. <?= $n['coefficient'] ?></span></td>
-                                <td><span class="badge badge-<?= $color ?>"><?= $n['note'] ?>/20</span></td>
-                            </tr>
-                        <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                    
-                    <?php
-                    $moyPonderee = $totalCoeff > 0 ? round($totalPondere / $totalCoeff, 2) : 0;
-                    $moyColor = $moyPonderee >= 15 ? 'var(--accent-emerald)' : ($moyPonderee >= 10 ? 'var(--accent-amber)' : 'var(--accent-rose)');
-                    $decision = $moyPonderee >= 10 ? '✅ Admis(e)' : '❌ Ajourné(e)';
-                    ?>
-                    
-                    <div class="moyenne-box">
-                        <div>
-                            <div class="moy-value" style="color:<?= $moyColor ?>"><?= $moyPonderee ?>/20</div>
-                            <div class="moy-label">Moyenne pondérée</div>
+
+                        <div class="moyenne-box">
+                            <div>
+                                <div class="moy-value" style="color:<?= $moyColor ?>"><?= $moyPonderee ?>/20</div>
+                                <div class="moy-label">Moyenne pondérée</div>
+                            </div>
+                            <div style="font-size:2rem; margin:0 1rem;">|</div>
+                            <div>
+                                <div class="moy-value" style="font-size:1.5rem; color:<?= $moyColor ?>"><?= $decision ?></div>
+                                <div class="moy-label">Décision du jury</div>
+                            </div>
                         </div>
-                        <div style="font-size:2rem; margin:0 1rem;">|</div>
-                        <div>
-                            <div class="moy-value" style="font-size:1.5rem; color:<?= $moyColor ?>"><?= $decision ?></div>
-                            <div class="moy-label">Décision du jury</div>
-                        </div>
-                    </div>
                     <?php else: ?>
-                    <p style="color:var(--text-muted); text-align:center; padding:2rem;">Aucune note disponible — bulletin vide.</p>
+                        <p style="color:var(--text-muted); text-align:center; padding:2rem;">Aucune note disponible — bulletin
+                            vide.</p>
                     <?php endif; ?>
                 </div>
-                
+
             <?php elseif ($section === 'formations'): ?>
                 <div class="panel">
-                    <h2>📚 Formations disponibles <small style="color:var(--text-muted); font-size:0.75rem; margin-left:10px;">— Lecture seule</small></h2>
+                    <h2>📚 Formations disponibles <small
+                            style="color:var(--text-muted); font-size:0.75rem; margin-left:10px;">— Lecture seule</small>
+                    </h2>
                     <table class="admin-table">
-                        <thead><tr><th>Intitulé</th><th>Durée</th><th>Niveau</th><th>Formateur</th></tr></thead>
-                        <tbody>
-                        <?php
-                        $r = mysqli_query($conn, "SELECT f.*, fo.nom as f_nom, fo.prenom as f_prenom FROM formations f LEFT JOIN formateurs fo ON f.id_formateur=fo.id_formateur ORDER BY f.id_formation");
-                        while ($row = mysqli_fetch_assoc($r)):
-                        ?>
+                        <thead>
                             <tr>
-                                <td class="name-cell"><?= $row['intitule'] ?></td>
-                                <td><?= $row['duree'] ?>h</td>
-                                <td><span class="badge badge-cyan"><?= $row['niveau'] ?></span></td>
-                                <td><?= $row['f_prenom'] ?> <?= $row['f_nom'] ?></td>
+                                <th>Intitulé</th>
+                                <th>Durée</th>
+                                <th>Niveau</th>
+                                <th>Formateur</th>
                             </tr>
-                        <?php endwhile; ?>
+                        </thead>
+                        <tbody>
+                            <?php
+                            $r = mysqli_query($conn, "SELECT f.*, fo.nom as f_nom, fo.prenom as f_prenom FROM formations f LEFT JOIN formateurs fo ON f.id_formateur=fo.id_formateur ORDER BY f.id_formation");
+                            while ($row = mysqli_fetch_assoc($r)):
+                                ?>
+                                <tr>
+                                    <td class="name-cell"><?= $row['intitule'] ?></td>
+                                    <td><?= $row['duree'] ?>h</td>
+                                    <td><span class="badge badge-cyan"><?= $row['niveau'] ?></span></td>
+                                    <td><?= $row['f_prenom'] ?>         <?= $row['f_nom'] ?></td>
+                                </tr>
+                            <?php endwhile; ?>
                         </tbody>
                     </table>
                 </div>
-                
+
             <?php elseif ($section === 'modules'): ?>
                 <div class="panel">
-                    <h2>📦 Modules <small style="color:var(--text-muted); font-size:0.75rem; margin-left:10px;">— Lecture seule</small></h2>
+                    <h2>📦 Modules <small style="color:var(--text-muted); font-size:0.75rem; margin-left:10px;">— Lecture
+                            seule</small></h2>
                     <table class="admin-table">
-                        <thead><tr><th>Module</th><th>Coefficient</th><th>Formation</th></tr></thead>
-                        <tbody>
-                        <?php
-                        $r = mysqli_query($conn, "SELECT m.*, f.intitule FROM modules m LEFT JOIN formations f ON m.id_formation=f.id_formation ORDER BY m.id_module");
-                        while ($row = mysqli_fetch_assoc($r)):
-                        ?>
+                        <thead>
                             <tr>
-                                <td class="name-cell"><?= $row['nom_module'] ?></td>
-                                <td><span class="badge badge-amber">Coeff. <?= $row['coefficient'] ?></span></td>
-                                <td><?= $row['intitule'] ?></td>
+                                <th>Module</th>
+                                <th>Coefficient</th>
+                                <th>Formation</th>
                             </tr>
-                        <?php endwhile; ?>
+                        </thead>
+                        <tbody>
+                            <?php
+                            $r = mysqli_query($conn, "SELECT m.*, f.intitule FROM modules m LEFT JOIN formations f ON m.id_formation=f.id_formation ORDER BY m.id_module");
+                            while ($row = mysqli_fetch_assoc($r)):
+                                ?>
+                                <tr>
+                                    <td class="name-cell"><?= $row['nom_module'] ?></td>
+                                    <td><span class="badge badge-amber">Coeff. <?= $row['coefficient'] ?></span></td>
+                                    <td><?= $row['intitule'] ?></td>
+                                </tr>
+                            <?php endwhile; ?>
                         </tbody>
                     </table>
                 </div>
-                
+
             <?php elseif ($section === 'salles'): ?>
                 <div class="panel">
-                    <h2>🏫 Salles <small style="color:var(--text-muted); font-size:0.75rem; margin-left:10px;">— Lecture seule</small></h2>
+                    <h2>🏫 Salles <small style="color:var(--text-muted); font-size:0.75rem; margin-left:10px;">— Lecture
+                            seule</small></h2>
                     <table class="admin-table">
-                        <thead><tr><th>Nom</th><th>Capacité</th><th>Équipement</th></tr></thead>
-                        <tbody>
-                        <?php
-                        $r = mysqli_query($conn, "SELECT * FROM salles ORDER BY id_salle");
-                        while ($row = mysqli_fetch_assoc($r)):
-                        ?>
+                        <thead>
                             <tr>
-                                <td class="name-cell"><?= $row['nom_salle'] ?></td>
-                                <td><?= $row['capacite'] ?> places</td>
-                                <td><?= $row['equipement'] ?></td>
+                                <th>Nom</th>
+                                <th>Capacité</th>
+                                <th>Équipement</th>
                             </tr>
-                        <?php endwhile; ?>
+                        </thead>
+                        <tbody>
+                            <?php
+                            $r = mysqli_query($conn, "SELECT * FROM salles ORDER BY id_salle");
+                            while ($row = mysqli_fetch_assoc($r)):
+                                ?>
+                                <tr>
+                                    <td class="name-cell"><?= $row['nom_salle'] ?></td>
+                                    <td><?= $row['capacite'] ?> places</td>
+                                    <td><?= $row['equipement'] ?></td>
+                                </tr>
+                            <?php endwhile; ?>
                         </tbody>
                     </table>
                 </div>
-                
+
             <?php elseif ($section === 'formateurs'): ?>
                 <div class="panel">
-                    <h2>🎓 Formateurs <small style="color:var(--text-muted); font-size:0.75rem; margin-left:10px;">— Lecture seule</small></h2>
+                    <h2>🎓 Formateurs <small style="color:var(--text-muted); font-size:0.75rem; margin-left:10px;">— Lecture
+                            seule</small></h2>
                     <table class="admin-table">
-                        <thead><tr><th>Nom</th><th>Spécialité</th><th>Email</th></tr></thead>
-                        <tbody>
-                        <?php
-                        $r = mysqli_query($conn, "SELECT * FROM formateurs ORDER BY nom");
-                        while ($row = mysqli_fetch_assoc($r)):
-                        ?>
+                        <thead>
                             <tr>
-                                <td class="name-cell"><?= $row['prenom'] ?> <?= $row['nom'] ?></td>
-                                <td><span class="badge badge-violet"><?= $row['specialite'] ?></span></td>
-                                <td><?= $row['email'] ?></td>
+                                <th>Nom</th>
+                                <th>Spécialité</th>
+                                <th>Email</th>
                             </tr>
-                        <?php endwhile; ?>
+                        </thead>
+                        <tbody>
+                            <?php
+                            $r = mysqli_query($conn, "SELECT * FROM formateurs ORDER BY nom");
+                            while ($row = mysqli_fetch_assoc($r)):
+                                ?>
+                                <tr>
+                                    <td class="name-cell"><?= $row['prenom'] ?>         <?= $row['nom'] ?></td>
+                                    <td><span class="badge badge-violet"><?= $row['specialite'] ?></span></td>
+                                    <td><?= $row['email'] ?></td>
+                                </tr>
+                            <?php endwhile; ?>
                         </tbody>
                     </table>
                 </div>
@@ -664,5 +824,6 @@ if ($etudiant_id) {
         </main>
     </div>
 </body>
+
 </html>
 <?php mysqli_close($conn); ?>

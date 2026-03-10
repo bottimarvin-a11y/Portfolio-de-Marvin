@@ -6,6 +6,15 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'enseignant') {
 }
 include("Connexion.php");
 
+// Récupérer les infos du profil de l'utilisateur connecté
+$uid = $_SESSION['user_id'] ?? 0;
+$rU = mysqli_query($conn, "SELECT * FROM users WHERE id=$uid");
+$userData = mysqli_fetch_assoc($rU);
+$userPhoto = $userData['photo'] ?? '';
+$userFullName = trim(($userData['prenom'] ?? '') . ' ' . ($userData['nom'] ?? ''));
+if ($userFullName == '')
+    $userFullName = $_SESSION['user'] ?? 'Étudiant';
+
 $message = '';
 $msgType = '';
 
@@ -425,9 +434,25 @@ $section = $_GET['section'] ?? 'dashboard';
                 <small>Espace Enseignant</small>
             </div>
 
+            <!-- Profile Section -->
+            <div class="sidebar-profile">
+                <?php if ($userPhoto): ?>
+                    <img src="<?= $userPhoto ?>" class="profile-photo" alt="Profile">
+                <?php else: ?>
+                    <div class="profile-photo"
+                        style="display:flex; align-items:center; justify-content:center; background:var(--bg-glass); font-size:1.5rem;">
+                        👤</div>
+                <?php endif; ?>
+                <div class="user-name"><?= htmlspecialchars($userFullName ?? '') ?></div>
+                <div class="user-role">Enseignant</div>
+            </div>
+
             <div class="sidebar-section">Navigation</div>
             <a href="?section=dashboard" class="<?= $section == 'dashboard' ? 'active' : '' ?>">
                 <span class="nav-icon">📊</span> Tableau de bord
+            </a>
+            <a href="?section=profil" class="<?= $section == 'profil' ? 'active' : '' ?>">
+                <span class="nav-icon">👤</span> Mon profil
             </a>
 
             <div class="sidebar-section">Consulter</div>
@@ -456,7 +481,7 @@ $section = $_GET['section'] ?? 'dashboard';
             </a>
 
             <div class="sidebar-section">Vues</div>
-            <a href="enregistrer.html">
+            <a href="bdd.php">
                 <span class="nav-icon">🗄️</span> Voir la BDD
             </a>
 
@@ -472,6 +497,7 @@ $section = $_GET['section'] ?? 'dashboard';
                     <?php
                     $titles = [
                         'dashboard' => '📊 Tableau de bord',
+                        'profil' => '👤 Mon profil',
                         'etudiants' => '👥 Étudiants',
                         'formations' => '📚 Formations',
                         'modules' => '📦 Modules',
@@ -483,9 +509,14 @@ $section = $_GET['section'] ?? 'dashboard';
                     echo $titles[$section] ?? 'Enseignant';
                     ?>
                 </h1>
-                <div class="user-badge">
+                <div class="user-badge" onclick="window.location='?section=profil'">
+                    <?php if ($userPhoto): ?>
+                        <img src="<?= $userPhoto ?>" class="profile-photo" alt="Avatar">
+                    <?php else: ?>
+                        <span class="nav-icon">👤</span>
+                    <?php endif; ?>
                     <span class="role-tag">Enseignant</span>
-                    <?= htmlspecialchars($_SESSION['user']) ?>
+                    <?= htmlspecialchars($userFullName ?? '') ?>
                 </div>
             </div>
 
@@ -829,7 +860,7 @@ $section = $_GET['section'] ?? 'dashboard';
                         </thead>
                         <tbody>
                             <?php
-                            $r = mysqli_query($conn, "SELECT e.nom, e.prenom, COUNT(n.note) as nb, ROUND(AVG(n.note),2) as moy, MIN(n.note) as mini, MAX(n.note) as maxi FROM etudiants e LEFT JOIN notes n ON e.id_etudiant=n.id_etudiant GROUP BY e.id_etudiant ORDER BY moy DESC");
+                            $r = mysqli_query($conn, "SELECT e.nom, e.prenom, u.photo, COUNT(n.note) as nb, ROUND(AVG(n.note),2) as moy, MIN(n.note) as mini, MAX(n.note) as maxi FROM etudiants e LEFT JOIN notes n ON e.id_etudiant=n.id_etudiant LEFT JOIN users u ON u.login = e.email GROUP BY e.id_etudiant ORDER BY moy DESC");
                             while ($row = mysqli_fetch_assoc($r)):
                                 $moy = $row['moy'] ?? 0;
                                 $color = $moy >= 15 ? 'emerald' : ($moy >= 10 ? 'amber' : 'rose');

@@ -144,13 +144,34 @@ body.portal-skipped #main-menu {
 
 @keyframes pulse {
 
-    0%,
-    100% {
-        opacity: 0.4;
-    }
-
     50% {
         opacity: 1;
+    }
+}
+
+@keyframes st-glitch {
+    0% {
+        transform: translate(0);
+    }
+
+    20% {
+        transform: translate(-1px, 1px);
+    }
+
+    40% {
+        transform: translate(-1px, -1px);
+    }
+
+    60% {
+        transform: translate(1px, 1px);
+    }
+
+    80% {
+        transform: translate(1px, -1px);
+    }
+
+    100% {
+        transform: translate(0);
     }
 }
 
@@ -715,6 +736,17 @@ body.portal-skipped #main-menu {
         0 10px 40px rgba(255, 23, 68, 0.2),
         0 0 20px rgba(255, 23, 68, 0.1);
     z-index: 20;
+}
+
+.episode-card:focus-visible {
+    outline: 2px solid var(--st-red-bright);
+    outline-offset: 4px;
+    transform: translateY(-8px);
+}
+
+.episode-card:hover .card-name {
+    animation: st-glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
+    text-shadow: 2px 0 rgba(255, 0, 0, 0.5), -2px 0 rgba(0, 0, 255, 0.5);
 }
 
 .card-thumbnail {

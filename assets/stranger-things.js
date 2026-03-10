@@ -31,8 +31,15 @@
 
         if (sessionStorage.getItem('portal_seen')) {
             document.body.classList.add('portal-skipped');
-            musicPlaying = true;
-            if (musicBtn) musicBtn.textContent = '🔊';
+
+            // Check persistence for mute
+            if (localStorage.getItem('st_music_muted')) {
+                musicPlaying = false;
+                if (musicBtn) musicBtn.textContent = '🔇';
+            } else {
+                musicPlaying = true;
+                if (musicBtn) musicBtn.textContent = '🔊';
+            }
 
             // Short delay to ensure browser has re-attached media elements
             setTimeout(() => {
@@ -48,6 +55,7 @@
             vortexSfx.pause();
             if (currentPlaylistTrack) currentPlaylistTrack.pause();
             musicBtn.textContent = '🔇';
+            localStorage.setItem('st_music_muted', 'true');
         } else {
             // Context dependent play
             if (document.getElementById('main-menu').classList.contains('active')) {
@@ -55,6 +63,7 @@
                 else audio.play().catch(() => { });
             }
             musicBtn.textContent = '🔊';
+            localStorage.removeItem('st_music_muted');
         }
         musicPlaying = !musicPlaying;
     }
@@ -68,8 +77,8 @@
     const mainMenu = document.getElementById('main-menu');
 
     clickScreen.addEventListener('click', function () {
-        // Start atmospheric hum (low volume)
-        audio.volume = 0.2;
+        // Start atmospheric hum (full volume)
+        audio.volume = 1.0;
         audio.play().catch(() => { });
         musicPlaying = true;
         if (musicBtn) musicBtn.textContent = '🔊';
@@ -275,9 +284,9 @@
         // Mark as seen for session persistence
         sessionStorage.setItem('portal_seen', 'true');
 
-        // Setup looping video with lower volume
+        // Setup looping video with full volume
         if (menuBgVideo) {
-            menuBgVideo.volume = 0.3; // Lower than audio as requested
+            menuBgVideo.volume = 1.0; // Match audio volume as requested
             menuBgVideo.load();
             menuBgVideo.play().catch(err => {
                 console.log("Video play failed:", err);
@@ -306,6 +315,14 @@
 
         const particles = [];
         const count = 100;
+        let mouseX = -1000;
+        let mouseY = -1000;
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY + window.scrollY;
+        });
+
         for (let i = 0; i < count; i++) {
             particles.push({
                 x: Math.random() * canvas.width,
@@ -320,11 +337,26 @@
 
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const scrollY = window.scrollY;
 
             particles.forEach(p => {
+                // Mouse repulsion
+                const dx = mouseX - p.x;
+                const dy = mouseY - p.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 150) {
+                    const force = (150 - dist) / 150;
+                    p.vx -= (dx / dist) * force * 0.4;
+                    p.vy -= (dy / dist) * force * 0.4;
+                }
+
                 p.x += p.vx;
                 p.y += p.vy;
+
+                // Return to normal speed
+                p.vx *= 0.95;
+                if (Math.abs(p.vx) < 0.05) p.vx = (Math.random() - 0.5) * 0.5;
+                if (p.vy < 0.1) p.vy += 0.05;
+
                 p.pulse += 0.01;
                 const alpha = p.alpha * (0.6 + 0.4 * Math.sin(p.pulse));
 
@@ -360,7 +392,17 @@
         cards.forEach((card, i) => {
             card.style.opacity = '0';
             card.style.transform = 'translateY(40px)';
-            card.style.transition = `all 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.5 + i * 0.1}s`;
+            card.style.transition = `all 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.5 + i * 0.08}s`;
+
+            // Subtle hover SFX
+            card.addEventListener('mouseenter', () => {
+                if (musicPlaying && vortexSfx) {
+                    const hoverGhost = vortexSfx.cloneNode();
+                    hoverGhost.volume = 0.05; // Very subtle
+                    hoverGhost.play().catch(() => { });
+                }
+            });
+
             setTimeout(() => {
                 card.style.opacity = '1';
                 card.style.transform = 'translateY(0)';

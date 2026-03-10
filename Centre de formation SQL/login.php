@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 header("Location: menu_etudiant.php");
                 break;
             default:
-                header("Location: enregistrer.html");
+                header("Location: bdd.php");
         }
     } else {
         echo "<script>alert('Login ou mot de passe incorrect'); window.location='login.php';</script>";
